@@ -92,7 +92,7 @@ function App() {
   return (
     <AuthContext.Provider value={{ state: authState, dispatch: authDispatch }}>
       <div className="max-w-screen-lg mx-auto px-4 sm:px-6 md:px-8 text-white">
-        <div className="flex">
+        <div className="flex w-full">
           <Nav />
           <Content>
             {!authState.session && !isResuming && <Login />}
