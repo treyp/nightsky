@@ -90,7 +90,7 @@ function App() {
   return (
     <AuthContext.Provider value={{ state: authState, dispatch: authDispatch }}>
       <div className="App">
-        <h1>Bluesky</h1>
+        <h1>Nightsky</h1>
         {!authState.session && <Login />}
         {isResuming && <p>Resuming session…</p>}
         {authState.session && (
