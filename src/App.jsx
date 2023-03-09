@@ -1,6 +1,5 @@
 import { useReducer, createContext, useEffect, useState } from "react";
-import Login from "./Login";
-import "./App.css";
+import Login from "./routes/Login";
 import {
   getLocalStorage,
   removeItemLocalStorage,
@@ -14,6 +13,9 @@ import {
   SESSION_LOCAL_STORAGE_KEY,
 } from "./consts";
 import { attemptResumeSession } from "./utils/session";
+import Home from "./routes/Home";
+import Nav from "./sections/Nav";
+import Content from "./sections/Content";
 
 export const AuthContext = createContext();
 const initialAuthState = {
@@ -89,15 +91,17 @@ function App() {
 
   return (
     <AuthContext.Provider value={{ state: authState, dispatch: authDispatch }}>
-      <div className="App">
-        <h1>Nightsky</h1>
-        {!authState.session && <Login />}
-        {isResuming && <p>Resuming session…</p>}
-        {authState.session && (
-          <button onClick={() => authDispatch({ type: AUTH_ACTION_LOGOUT })}>
-            Sign out
-          </button>
-        )}
+      <div className="max-w-screen-lg mx-auto px-4 sm:px-6 md:px-8 text-white">
+        <div className="flex">
+          <Nav />
+          <Content>
+            {!authState.session && !isResuming && <Login />}
+            {isResuming && (
+              <p className="text-lg">Attempting to resume session…</p>
+            )}
+            {authState.session && <Home />}
+          </Content>
+        </div>
       </div>
     </AuthContext.Provider>
   );
