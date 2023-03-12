@@ -6,6 +6,12 @@ import { AuthContext } from "../App";
 export default function Nav() {
   const { dispatch: authDispatch } = useContext(AuthContext);
 
+  const onSignOut = () => {
+    if (confirm("Are you sure you want to sign out?")) {
+      authDispatch({ type: AUTH_ACTION_LOGOUT });
+    }
+  };
+
   return (
     <div className="drawer-side">
       <label htmlFor="sidenav" className="drawer-overlay"></label>
@@ -15,13 +21,22 @@ export default function Nav() {
           <li className="bordered">
             <a>Home</a>
           </li>
+          <li>
+            <a>Search</a>
+          </li>
+          <li>
+            <a>Notifications</a>
+          </li>
+          <li>
+            <a>Profile</a>
+          </li>
+          <li>
+            <a>Settings</a>
+          </li>
+          <li>
+            <a onClick={onSignOut}>Sign out</a>
+          </li>
         </ul>
-        <a
-          className="link link-neutral mt-4 pl-4 lg:pl-0"
-          onClick={() => authDispatch({ type: AUTH_ACTION_LOGOUT })}
-        >
-          Sign out
-        </a>
       </div>
     </div>
   );
