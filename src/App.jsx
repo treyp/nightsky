@@ -16,6 +16,7 @@ import { attemptResumeSession } from "./utils/session";
 import Home from "./routes/Home";
 import Nav from "./sections/Nav";
 import Content from "./sections/Content";
+import ResumingSession from "./sections/ResumingSession";
 
 export const AuthContext = createContext();
 const initialAuthState = {
@@ -91,16 +92,15 @@ function App() {
 
   return (
     <AuthContext.Provider value={{ state: authState, dispatch: authDispatch }}>
-      <div className="max-w-screen-lg mx-auto px-4 sm:px-6 md:px-8 text-white">
-        <div className="flex w-full">
-          <Nav />
+      <div className="max-w-screen-lg mx-auto lg:px-4">
+        <div className="drawer drawer-mobile">
+          <input id="sidenav" type="checkbox" className="drawer-toggle" />
           <Content>
-            {!authState.session && !isResuming && <Login />}
-            {isResuming && (
-              <p className="text-lg">Attempting to resume session…</p>
-            )}
+            {!isResuming && !authState.session && <Login />}
+            {isResuming && <ResumingSession />}
             {authState.session && <Home />}
           </Content>
+          <Nav />
         </div>
       </div>
     </AuthContext.Provider>

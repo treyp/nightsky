@@ -1,13 +1,11 @@
 import classNames from "classnames";
 
-export default function Code(props) {
+export default function Code({ children, className, ...props }) {
   return (
-    <code
-      {...props}
-      className={classNames(
-        props.className,
-        "block p-4 rounded bg-slate-800 font-mono max-w-full break-words"
-      )}
-    />
+    <div {...props} className={classNames("mockup-code", className)}>
+      <pre className="max-h-[50vh] overflow-auto break-words">
+        <code>{children}</code>
+      </pre>
+    </div>
   );
 }

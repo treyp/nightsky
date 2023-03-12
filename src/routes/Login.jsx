@@ -6,6 +6,7 @@ import { attemptLogin } from "../utils/session";
 import Input from "../components/Input";
 import Label from "../components/Label";
 import Button from "../components/Button";
+import FormControl from "../components/FormControl";
 
 export default function Login() {
   const [isSubmitting, setSubmitting] = useState(false);
@@ -24,13 +25,14 @@ export default function Login() {
   };
 
   return (
-    <form ref={form} onSubmit={onFormSubmit}>
-      <fieldset disabled={isSubmitting} className="w-80">
-        <legend className="text-3xl block">Sign in</legend>
-        <Label>
-          Service
+    <form ref={form} onSubmit={onFormSubmit} className="w-full max-w-xs">
+      <fieldset disabled={isSubmitting}>
+        <legend className="text-center text-xl font-bold block">Sign in</legend>
+        <FormControl>
+          <Label htmlFor="service">Service</Label>
           <Input
             type="text"
+            id="service"
             name="service"
             required
             placeholder="https://bsky.social"
@@ -39,16 +41,16 @@ export default function Login() {
               "https://bsky.social"
             }
           />
-        </Label>
-        <Label>
-          Username or email address
+        </FormControl>
+        <FormControl>
+          <Label htmlFor="identifier">Username or email address</Label>
           <Input type="text" id="identifier" name="identifier" required />
-        </Label>
-        <Label>
-          Password
+        </FormControl>
+        <FormControl>
+          <Label htmlFor="password">Password</Label>
           <Input type="password" id="password" name="password" required />
-        </Label>
-        <Button type="submit" className="mt-8">
+        </FormControl>
+        <Button type="submit" className="btn-block mt-8">
           Sign in
         </Button>
       </fieldset>

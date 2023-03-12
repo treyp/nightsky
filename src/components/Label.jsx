@@ -1,7 +1,9 @@
 import classNames from "classnames";
 
-export default function Label(props) {
+export default function Label({ children, ...props }) {
   return (
-    <label {...props} className={classNames(props.className, "block mt-4")} />
+    <label {...props} className={classNames("label", props.className)}>
+      <span className="label-text">{children}</span>
+    </label>
   );
 }
