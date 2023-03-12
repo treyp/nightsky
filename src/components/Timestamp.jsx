@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { useEffect, useState } from "react";
 
 const timeUnits = {
@@ -19,7 +20,12 @@ function relativeTimeSince(sinceDate) {
   }
 }
 
-export default function Timestamp({ date, updateInterval = 5000 }) {
+export default function Timestamp({
+  date,
+  updateInterval = 5000,
+  className,
+  ...props
+}) {
   const [timeAgo, setTimeAgo] = useState(relativeTimeSince(date));
 
   useEffect(() => {
@@ -31,7 +37,11 @@ export default function Timestamp({ date, updateInterval = 5000 }) {
   }, [date]);
 
   return (
-    <span className="text-primary-content" title={date.toLocaleString()}>
+    <span
+      className={classNames("text-primary-content", className)}
+      title={date.toLocaleString()}
+      {...props}
+    >
       {timeAgo}
     </span>
   );

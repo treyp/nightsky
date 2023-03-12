@@ -31,7 +31,7 @@ export default function PostMeta({ post }) {
       {createdAt && (
         <>
           {"· "}
-          <Timestamp date={createdAt} />
+          <Timestamp date={createdAt} onClick={() => console.log(post)} />
         </>
       )}
     </>
