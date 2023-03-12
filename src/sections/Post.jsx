@@ -1,26 +1,9 @@
-import { useContext } from "react";
-import { AuthContext } from "../App";
-import Timestamp from "../components/Timestamp";
 import PostImages from "./PostImages";
+import PostMeta from "./PostMeta";
 import PostText from "./PostText";
+import QuotedPost from "./QuotedPost";
 
 export default function Post({ post, isParent, isReply }) {
-  const { state: authState } = useContext(AuthContext);
-
-  const defaultDomain = `.${authState.service.slice(
-    authState.service.indexOf("//") + "//".length
-  )}`;
-  const handle = post.author?.handle || "";
-  const handleIsInDefaultDomain = handle.endsWith(defaultDomain);
-  const shortHandle = handleIsInDefaultDomain
-    ? handle.slice(0, -1 * defaultDomain.length)
-    : handle;
-  const handleDefaultDomain = handleIsInDefaultDomain ? defaultDomain : "";
-
-  const createdAt = post.record?.createdAt
-    ? new Date(post.record?.createdAt)
-    : null;
-
   return (
     <div className="flex pb-2">
       <div className="flex-none pr-2">
@@ -34,22 +17,11 @@ export default function Post({ post, isParent, isReply }) {
         )}
       </div>
       <div className="flex-1">
-        <span className="font-bold">{post.author?.displayName}</span>{" "}
-        <span className="text-primary-content">
-          @{shortHandle}
-          {handleDefaultDomain && (
-            <span className="opacity-30">{handleDefaultDomain}</span>
-          )}
-        </span>{" "}
-        {createdAt && (
-          <>
-            {"· "}
-            <Timestamp date={createdAt} />
-          </>
-        )}
+        <PostMeta post={post} />
         {post.record && (
           <PostText text={post.record.text} entities={post.record.entities} />
         )}
+        {post.embed?.record && <QuotedPost post={post.embed?.record} />}
         {post.embed?.images && (
           <PostImages post={post} images={post.embed?.images} />
         )}
