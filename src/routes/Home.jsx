@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../App";
-import Code from "../components/Code";
+import Feed from "../sections/Feed";
 
 export default function Home() {
   const { state: authState } = useContext(AuthContext);
@@ -24,8 +24,6 @@ export default function Home() {
   }, [authState.agent]);
 
   return (
-    <div className="max-w-full">
-      {feed && <Code>{JSON.stringify(feed, undefined, 4)}</Code>}
-    </div>
+    <div className="max-w-full max-h-full">{feed && <Feed feed={feed} />}</div>
   );
 }
