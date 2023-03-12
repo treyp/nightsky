@@ -1,30 +1,8 @@
 import { useContext } from "react";
 import { AuthContext } from "../App";
+import Timestamp from "../components/Timestamp";
 import PostImages from "./PostImages";
 import PostText from "./PostText";
-
-const timeUnits = {
-  year: 24 * 60 * 60 * 1000 * 365,
-  month: (24 * 60 * 60 * 1000 * 365) / 12,
-  day: 24 * 60 * 60 * 1000,
-  hour: 60 * 60 * 1000,
-  minute: 60 * 1000,
-  second: 1000,
-};
-
-function relativeTimeSince(sinceDate) {
-  const now = new Date();
-  const rtf = new Intl.RelativeTimeFormat("en", {
-    numeric: "auto",
-    style: "narrow",
-  });
-  const elapsedTime = sinceDate - now;
-  for (var unit in timeUnits) {
-    if (Math.abs(elapsedTime) > timeUnits[unit] || unit == "second") {
-      return rtf.format(Math.round(elapsedTime / timeUnits[unit]), unit);
-    }
-  }
-}
 
 export default function Post({ post, isParent, isReply }) {
   const { state: authState } = useContext(AuthContext);
@@ -42,7 +20,6 @@ export default function Post({ post, isParent, isReply }) {
   const createdAt = post.record?.createdAt
     ? new Date(post.record?.createdAt)
     : null;
-  const timeAgo = createdAt ? relativeTimeSince(createdAt) : null;
 
   return (
     <div className="flex pb-2">
@@ -64,14 +41,11 @@ export default function Post({ post, isParent, isReply }) {
             <span className="opacity-30">{handleDefaultDomain}</span>
           )}
         </span>{" "}
-        {createdAt && timeAgo && (
-          <span
-            className="text-primary-content"
-            title={createdAt.toLocaleString()}
-          >
+        {createdAt && (
+          <>
             {"· "}
-            {timeAgo}
-          </span>
+            <Timestamp date={createdAt} />
+          </>
         )}
         {post.record && (
           <PostText text={post.record.text} entities={post.record.entities} />
