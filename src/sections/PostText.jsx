@@ -1,4 +1,4 @@
-export const handleLineBreaks = (string) =>
+const handleLineBreaks = (string) =>
   string
     .split("\n")
     .map((item, index) => (index === 0 ? item : [<br key={index} />, item]));
