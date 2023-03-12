@@ -1,5 +1,7 @@
 import { useContext } from "react";
 import { AuthContext } from "../App";
+import PostImages from "./PostImages";
+import PostText from "./PostText";
 
 export default function Post({ post, isParent, isReply }) {
   const { state: authState } = useContext(AuthContext);
@@ -32,20 +34,11 @@ export default function Post({ post, isParent, isReply }) {
             <span className="opacity-30">{handleDefaultDomain}</span>
           )}
         </span>
-        <div>{post.record?.text}</div>
+        {post.record && (
+          <PostText text={post.record.text} entities={post.record.entities} />
+        )}
         {post.embed?.images && (
-          <div className="py-4">
-            {post.embed?.images.map((image, imageKey) => (
-              <a href={image.fullsize} target="_blank">
-                <img
-                  key={`${post.cid}-image-${imageKey}`}
-                  src={image.thumb}
-                  alt={image.alt}
-                  className="max-w-xs max-h-xs rounded"
-                />
-              </a>
-            ))}
-          </div>
+          <PostImages post={post} images={post.embed?.images} />
         )}
         <div className="opacity-50 mt-2 text-sm">
           <span className="inline-block w-16 lg:w-32">
