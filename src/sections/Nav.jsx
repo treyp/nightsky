@@ -17,7 +17,7 @@ export default function Nav() {
           </li>
         </ul>
         <a
-          className="link link-neutral mt-4"
+          className="link link-neutral mt-4 pl-4 lg:pl-0"
           onClick={() => authDispatch({ type: AUTH_ACTION_LOGOUT })}
         >
           Sign out
