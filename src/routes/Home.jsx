@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../Auth";
 import Button from "../components/Button";
 import Feed from "../sections/Feed";
+import FeedSkeleton from "../sections/FeedSkeleton";
 
 export default function Home() {
   const { state: authState } = useAuth();
@@ -40,7 +41,8 @@ export default function Home() {
   };
 
   return (
-    <div className="max-w-full max-h-full">
+    <div className="w-full">
+      {!feed && isFetching && <FeedSkeleton />}
       {feed && <Feed feed={feed} />}
       {feed && (
         <Button
