@@ -10,7 +10,7 @@ function App() {
       <div className="max-w-screen-lg mx-auto lg:px-4">
         <div className="drawer drawer-mobile">
           <input id="sidenav" type="checkbox" className="drawer-toggle" />
-          <div className="drawer-content flex flex-col items-center px-4 lg:pr-0 lg:pt-4">
+          <div className="drawer-content flex flex-col items-center lg:pl-4 lg:pt-4">
             <MobileNavBar />
             <ResumingSession />
             <Outlet />

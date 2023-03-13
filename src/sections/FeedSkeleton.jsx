@@ -13,12 +13,12 @@ function PostSkeleton() {
     );
   }
   return (
-    <div className="flex space-x-4 pr-4 mt-8">
+    <div className="flex space-x-2 pl-4 pr-8 mt-8">
       <div className="rounded-full bg-base-content h-12 w-12"></div>
       <div className="flex-1 space-y-4 py-1">
         <div className="h-2 w-1/2 bg-base-content rounded"></div>
         {content}
-        <div className="w-3/5 grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-4 w-full max-w-xs">
           <div className="h-2 bg-base-content rounded"></div>
           <div className="h-2 bg-base-content rounded"></div>
           <div className="h-2 bg-base-content rounded"></div>
@@ -33,5 +33,5 @@ export default function FeedSkeleton() {
   for (let index = 0; index < 5; index++) {
     skeletonPosts.push(<PostSkeleton key={`post-skeleton-${index}`} />);
   }
-  return <div className="animate-pulse w-full">{skeletonPosts}</div>;
+  return <div className="animate-pulse w-full -mt-4">{skeletonPosts}</div>;
 }

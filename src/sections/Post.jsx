@@ -17,7 +17,7 @@ export default function Post({ post, isParent, isReply }) {
           <div className="bg-accent w-[2px] mx-auto flex-1 h-auto min-h-6"></div>
         )}
       </div>
-      <div className="flex-1">
+      <div className="flex-1 pr-4">
         <PostMeta post={post} />
         {post.record && (
           <PostText text={post.record.text} entities={post.record.entities} />

@@ -6,7 +6,10 @@ export default function Feed({ feed }) {
     <div>
       {feed &&
         feed.map((feedItem) => (
-          <div className="border-b border-accent my-2" key={feedItem.post?.cid}>
+          <div
+            className="border-b border-accent my-2 px-4"
+            key={feedItem.post?.cid}
+          >
             {feedItem.reply?.parent && (
               <Post post={feedItem.reply.parent} isParent />
             )}

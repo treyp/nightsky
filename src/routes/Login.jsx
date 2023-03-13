@@ -36,7 +36,7 @@ export default function Login() {
   };
 
   return (
-    <form ref={form} onSubmit={onFormSubmit} className="w-full max-w-xs">
+    <form ref={form} onSubmit={onFormSubmit} className="w-full max-w-xs px-4">
       <fieldset disabled={isSubmitting}>
         <legend className="text-center text-xl font-bold block">Sign in</legend>
         <FormControl>
