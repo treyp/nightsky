@@ -26,7 +26,9 @@ export default function Login() {
     setSubmitting(true);
     login(service, identifier, password)
       .then(() => {
-        navigate(from, { replace: true });
+        setTimeout(() => {
+          navigate(from, { replace: true });
+        }, 0);
       })
       .finally(() => {
         setSubmitting(false);
