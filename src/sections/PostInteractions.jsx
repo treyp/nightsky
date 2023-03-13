@@ -6,19 +6,19 @@ import {
 
 export default function PostInteractions({ post }) {
   return (
-    <div className="opacity-50 mt-2 text-sm">
-      <span className="inline-block w-16 lg:w-32">
+    <div className="opacity-50 mt-2 text-sm grid grid-cols-3 max-w-xs">
+      <div>
         <ChatBubbleBottomCenterIcon className="h-4 w-4 inline-block stroke-2 mr-2" />
         {post.replyCount || ""}
-      </span>
-      <span className="inline-block w-16 lg:w-32">
+      </div>
+      <div>
         <ArrowPathRoundedSquareIcon className="h-4 w-4 inline-block stroke-2 mr-2" />
         {post.repostCount || ""}
-      </span>
-      <span className="inline-block w-16 lg:w-32">
+      </div>
+      <div>
         <HeartIcon className="h-4 w-4 inline-block stroke-2 mr-2" />
         {post.upvoteCount || ""}
-      </span>
+      </div>
     </div>
   );
 }
