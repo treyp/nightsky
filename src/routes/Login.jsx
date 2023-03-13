@@ -1,17 +1,19 @@
-import { useState, useRef, useContext } from "react";
-import { getLocalStorage } from "../utils/localStorage";
-import { SERVICE_LOCAL_STORAGE_KEY } from "../consts";
-import { AuthContext } from "../App";
-import { attemptLogin } from "../utils/session";
+import { useState, useRef } from "react";
+import { getLastUsedService, useAuth } from "../Auth";
 import Input from "../components/Input";
 import Label from "../components/Label";
 import Button from "../components/Button";
 import FormControl from "../components/FormControl";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [isSubmitting, setSubmitting] = useState(false);
   const form = useRef(null);
-  const { dispatch: authDispatch } = useContext(AuthContext);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/";
 
   const onFormSubmit = (submitEvent) => {
     submitEvent.preventDefault();
@@ -21,7 +23,14 @@ export default function Login() {
     const identifier = formData.get("identifier");
     const password = formData.get("password");
 
-    attemptLogin(setSubmitting, authDispatch, service, identifier, password);
+    setSubmitting(true);
+    login(service, identifier, password)
+      .then(() => {
+        navigate(from, { replace: true });
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (
@@ -36,10 +45,7 @@ export default function Login() {
             name="service"
             required
             placeholder="https://bsky.social"
-            defaultValue={
-              getLocalStorage(SERVICE_LOCAL_STORAGE_KEY) ||
-              "https://bsky.social"
-            }
+            defaultValue={getLastUsedService() || "https://bsky.social"}
           />
         </FormControl>
         <FormControl>

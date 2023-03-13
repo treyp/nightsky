@@ -1,8 +1,17 @@
+import { useAuth } from "../Auth";
+
 export default function ResumingSession() {
+  const { state: authState } = useAuth();
+  if (!authState.isResuming) {
+    return null;
+  }
   return (
-    <>
-      <progress className="progress w-56 mb-4"></progress>
-      <p className="text-lg">Attempting to resume session…</p>
-    </>
+    <div className="toast toast-center">
+      <div className="alert alert-info w-max">
+        <div>
+          <span>Attempting to resume session…</span>
+        </div>
+      </div>
+    </div>
   );
 }

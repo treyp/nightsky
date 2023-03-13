@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../App";
+import { useEffect, useState } from "react";
+import { useAuth } from "../Auth";
 import Button from "../components/Button";
 import Feed from "../sections/Feed";
 
 export default function Home() {
-  const { state: authState } = useContext(AuthContext);
+  const { state: authState } = useAuth();
   const [isFetching, setIsFetching] = useState(false);
   const [feed, setFeed] = useState(null);
   const [cursor, setCursor] = useState(null);

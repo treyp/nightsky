@@ -1,9 +1,8 @@
-import { useContext } from "react";
-import { AuthContext } from "../App";
+import { useAuth } from "../Auth";
 import Timestamp from "../components/Timestamp";
 
 export default function PostMeta({ post }) {
-  const { state: authState } = useContext(AuthContext);
+  const { state: authState } = useAuth();
 
   const defaultDomain = `.${authState.service.slice(
     authState.service.indexOf("//") + "//".length
