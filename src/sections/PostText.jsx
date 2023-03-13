@@ -33,6 +33,7 @@ function textFragments(text, entities) {
         type: FRAGMENT_TYPE_ENTITY,
         entity: currentEntity,
       });
+      currentFragment = "";
       nextFragment = "";
       currentEntity = null;
     }
@@ -44,6 +45,7 @@ function textFragments(text, entities) {
           throw new Error("Unexpected overlapping text entities found");
         }
         fragments.push({ text: currentFragment, type: FRAGMENT_TYPE_TEXT });
+        currentFragment = "";
         nextFragment = currentChar;
       }
       currentEntity = entitiesMap[charIndex];
@@ -57,6 +59,7 @@ function textFragments(text, entities) {
         fragments.push({ text: currentFragment, type: FRAGMENT_TYPE_TEXT });
       }
       fragments.push({ type: FRAGMENT_TYPE_LINE_BREAK });
+      currentFragment = "";
       nextFragment = "";
     }
 
