@@ -15,8 +15,8 @@ export default function Nav() {
     <div className="drawer-side">
       <label htmlFor="sidenav" className="drawer-overlay"></label>
       <div className="py-4 bg-base-100 w-56">
-        <AppTitle className="hidden lg:block mb-4" />
-        <ul className="menu">
+        <AppTitle className="hidden lg:block mb-4 px-2" />
+        <ul className="menu rounded-box px-2">
           {authState.isInitialized &&
             !authState.isResuming &&
             !authState.agent && (
