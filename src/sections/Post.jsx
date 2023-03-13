@@ -1,4 +1,5 @@
 import PostImages from "./PostImages";
+import PostInteractions from "./PostInteractions";
 import PostMeta from "./PostMeta";
 import PostText from "./PostText";
 import QuotedPost from "./QuotedPost";
@@ -25,17 +26,7 @@ export default function Post({ post, isParent, isReply }) {
         {post.embed?.images && (
           <PostImages post={post} images={post.embed?.images} />
         )}
-        <div className="opacity-50 mt-2 text-sm">
-          <span className="inline-block w-16 lg:w-32">
-            💬 {post.replyCount || ""}
-          </span>
-          <span className="inline-block w-16 lg:w-32">
-            ⇵ {post.repostCount || ""}
-          </span>
-          <span className="inline-block w-16 lg:w-32">
-            ♡ {post.upvoteCount || ""}
-          </span>
-        </div>
+        <PostInteractions post={post} />
       </div>
     </div>
   );

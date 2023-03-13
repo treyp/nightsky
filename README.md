@@ -2,7 +2,7 @@
 
 Nightsky is a web client for [Bluesky](https://bsky.app/) and other services based on the [AT Protocol](https://atproto.com/).
 
-The project was scaffolded using [Vite](https://vitejs.dev/)'s [React template](https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react). It is styled using [Tailwind CSS](https://tailwindcss.com/) with the [daisyUI](https://daisyui.com/) plugin. Routing happens with [React Router](https://reactrouter.com/en/main).
+The project was scaffolded using [Vite](https://vitejs.dev/)'s [React template](https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react). It is styled using [Tailwind CSS](https://tailwindcss.com/) with the [daisyUI](https://daisyui.com/) plugin and [heroicons](https://heroicons.com/). Routing happens with [React Router](https://reactrouter.com/en/main).
 
 At this time, this app is served on [GitHub Pages](https://pages.github.com/) so that its source code can be trusted. This limits it to a static site implementation only.
 
