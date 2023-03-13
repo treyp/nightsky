@@ -7,14 +7,14 @@ import QuotedPost from "./QuotedPost";
 export default function Post({ post, isParent, isReply }) {
   return (
     <div className="flex pb-2">
-      <div className="flex-none pr-2">
-        <div className="avatar">
+      <div className="flex-none pr-2 flex flex-col">
+        <div className="avatar flex-none">
           <div className="w-12 rounded-full">
             <img src={post.author.avatar} />
           </div>
         </div>
         {isParent && (
-          <div className="bg-accent w-[2px] mx-auto flex-1 h-auto min-h-6"></div>
+          <div className="bg-accent w-[2px] mx-auto mt-2 flex-1 h-auto min-h-6"></div>
         )}
       </div>
       <div className="flex-1 pr-4">
