@@ -29,7 +29,7 @@ module.exports = {
           // https://www.schemecolor.com/night-sky-color-palette.php
           "color-scheme": "dark",
           primary: "#6b4984",
-          secondary: "#C8B6E2",
+          secondary: "#855988",
           accent: "#2b2f77",
           neutral: "#2B1F46",
           "base-100": "#060719",

@@ -21,16 +21,20 @@ export default function PostMeta({ post }) {
   return (
     <>
       <span className="font-bold">{post.author?.displayName}</span>{" "}
-      <span className="text-primary-content">
-        @{shortHandle}
+      <span className="text-gray-400">
+        {shortHandle}
         {handleDefaultDomain && (
-          <span className="opacity-30">{handleDefaultDomain}</span>
+          <span className="text-gray-700">{handleDefaultDomain}</span>
         )}
       </span>{" "}
       {createdAt && (
         <>
-          {"· "}
-          <Timestamp date={createdAt} onClick={() => console.log(post)} />
+          <span className="text-gray-400">{" · "}</span>
+          <Timestamp
+            className="text-gray-400"
+            date={createdAt}
+            onClick={() => console.log(post)}
+          />
         </>
       )}
     </>

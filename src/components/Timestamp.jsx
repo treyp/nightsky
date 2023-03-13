@@ -38,7 +38,7 @@ export default function Timestamp({
 
   return (
     <span
-      className={classNames("text-primary-content", className)}
+      className={classNames(className)}
       title={date.toLocaleString()}
       {...props}
     >
