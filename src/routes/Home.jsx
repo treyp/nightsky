@@ -16,7 +16,7 @@ export default function Home() {
     }
     const timelineOptions = { limit: 50 };
     if (cursor) {
-      timelineOptions.before = cursor;
+      timelineOptions.cursor = cursor;
     }
     setIsFetching(true);
     authState.agent.api.app.bsky.feed
