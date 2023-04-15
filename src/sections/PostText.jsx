@@ -1,127 +1,74 @@
-const FRAGMENT_TYPE_ENTITY = "entity";
-const FRAGMENT_TYPE_TEXT = "text";
-const FRAGMENT_TYPE_LINE_BREAK = "line-break";
+import { RichText } from "@atproto/api";
+import { useEffect, useState } from "react";
+import { useAuth } from "../Auth";
 
-// Separate the text into an array of fragments which can be mapped to React fragments
-function textFragments(text, entities) {
-  let fragments = [];
+const LINE_RETURN_REGEX = /[\r\n]/;
 
-  // A map of starting characters to entities
-  const entitiesMap = {};
-  if (entities) {
-    entities.forEach((entity) => {
-      if (!entity?.index?.start) {
-        return;
+// handles line breaks
+function mapTextToComponents(text) {
+  if (!text.match(LINE_RETURN_REGEX)) {
+    return text;
+  }
+  return text
+    .split(LINE_RETURN_REGEX)
+    .flatMap((segment, segmentIndex, segments) => {
+      if (segmentIndex === segments.length - 1) {
+        return segment;
       }
-      entitiesMap[entity.index.start] = entity;
+      return [segment, <br key={`line-break-${segmentIndex}`} />];
     });
-  }
+}
 
-  let currentFragment = "";
-  let nextFragment;
-  let currentChar;
-  let currentEntity = null;
-  // Parse the string character-by-character looking for entities and line breaks
-  for (let charIndex = 0; charIndex < text.length; charIndex++) {
-    currentChar = text[charIndex];
-    nextFragment = currentFragment + currentChar;
-
-    // End of entity boundary found
-    if (currentEntity && currentEntity.index.end === charIndex) {
-      fragments.push({
-        text: nextFragment,
-        type: FRAGMENT_TYPE_ENTITY,
-        entity: currentEntity,
-      });
-      currentFragment = "";
-      nextFragment = "";
-      currentEntity = null;
-    }
-
-    // Start of entity boundary found
-    if (entitiesMap[charIndex]) {
-      if (currentFragment.length) {
-        if (currentEntity) {
-          throw new Error("Unexpected overlapping text entities found");
-        }
-        fragments.push({ text: currentFragment, type: FRAGMENT_TYPE_TEXT });
-        currentFragment = "";
-        nextFragment = currentChar;
-      }
-      currentEntity = entitiesMap[charIndex];
-      currentChar = text[charIndex];
-      currentFragment = currentChar;
-    }
-
-    // Handle line breaks in text
-    if (!currentEntity && currentChar === "\n") {
-      if (currentFragment.length) {
-        fragments.push({ text: currentFragment, type: FRAGMENT_TYPE_TEXT });
-      }
-      fragments.push({ type: FRAGMENT_TYPE_LINE_BREAK });
-      currentFragment = "";
-      nextFragment = "";
-    }
-
-    currentFragment = nextFragment;
-  }
-
-  // We've reached the end of the string
-  if (currentFragment.length) {
-    if (currentEntity) {
-      fragments.push({
-        text: currentFragment,
-        type: FRAGMENT_TYPE_ENTITY,
-        entity: currentEntity,
-      });
+function mapSegmentsToComponents(segments) {
+  const components = [];
+  let segmentIndex = 0;
+  for (const segment of segments) {
+    if (segment.isMention()) {
+      components.push(
+        <a
+          href="#"
+          className="text-primary"
+          onClick={(e) => e.preventDefault()}
+          key={segmentIndex}
+        >
+          {mapTextToComponents(segment.text)}
+        </a>
+      );
+    } else if (segment.isLink()) {
+      components.push(
+        <a
+          href={segment.link?.uri}
+          className="text-primary"
+          target="_blank"
+          itemRef="nofollow"
+          key={segmentIndex}
+        >
+          {mapTextToComponents(segment.text)}
+        </a>
+      );
     } else {
-      fragments.push({ text: currentFragment, type: FRAGMENT_TYPE_TEXT });
+      components.push(
+        <span key={segmentIndex}>{mapTextToComponents(segment.text)}</span>
+      );
     }
+    segmentIndex++;
   }
-
-  return fragments;
+  return components;
 }
 
-function mapFragmentsToComponents(textFragments) {
-  return textFragments.map((fragment, fragmentIndex) => {
-    if (fragment.type === FRAGMENT_TYPE_LINE_BREAK) {
-      return <br key={fragmentIndex} />;
-    }
-    if (fragment.type === FRAGMENT_TYPE_ENTITY) {
-      if (fragment.entity?.type === "mention") {
-        return (
-          <a
-            href="#"
-            className="text-primary"
-            onClick={(e) => e.preventDefault()}
-            key={fragmentIndex}
-          >
-            {fragment.text}
-          </a>
-        );
-      }
-      if (fragment.entity?.type === "link") {
-        return (
-          <a
-            href={fragment.entity.value}
-            className="text-primary"
-            target="_blank"
-            itemRef="nofollow"
-            key={fragmentIndex}
-          >
-            {fragment.text}
-          </a>
-        );
-      }
-    }
-    return <span key={fragmentIndex}>{fragment.text}</span>;
-  });
-}
+export default function PostText({ text, isFeatured }) {
+  const { state: authState } = useAuth();
+  const [formattedText, setFormattedText] = useState(text);
 
-export default function PostText({ text, entities, isFeatured }) {
-  return (
-    <div className={isFeatured && "text-xl"}>
-      {mapFragmentsToComponents(textFragments(text, entities))}
-    </div>
-  );
+  useEffect(() => {
+    const richText = new RichText({ text });
+    if (!authState.agent) {
+      return;
+    }
+    richText.detectFacets(authState.agent).then(() => {
+      setFormattedText(mapSegmentsToComponents(richText.segments()));
+    });
+  }, [authState.agent, text]);
+
+  return <div className={isFeatured && "text-xl"}>{formattedText}</div>;
 }

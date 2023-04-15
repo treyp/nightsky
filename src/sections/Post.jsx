@@ -34,17 +34,12 @@ export default function Post({ post, isParent, isFeatured }) {
   const postBody = (
     <>
       {post.record && (
-        <PostText
-          text={post.record.text}
-          entities={post.record.entities}
-          isFeatured={isFeatured}
-        />
+        <PostText text={post.record.text} isFeatured={isFeatured} />
       )}
       {post.embed?.record && (
         <QuotedPost
           post={post.embed.record?.record || post.embed.record}
           media={post.embed.media}
-          entities={post.embed.record.entities}
         />
       )}
       {post.embed?.images && (
