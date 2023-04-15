@@ -13,7 +13,9 @@ export default function QuotedPost({ post, media }) {
         </div>{" "}
         <PostMeta post={post} />
         {post.value && <PostText text={post.value.text} />}
-        {media?.images && <PostImages post={post} images={media?.images} />}
+        {media && media.images && (
+          <PostImages post={post} images={media.images} />
+        )}
       </div>
     </div>
   );
