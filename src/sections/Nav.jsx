@@ -35,9 +35,13 @@ export default function Nav() {
               <li>
                 <a>Notifications</a>
               </li>
-              <li>
-                <a>Profile</a>
-              </li>
+              {authState.session && (
+                <li>
+                  <NavLink to={`/profile/${authState.session.handle}`}>
+                    Profile
+                  </NavLink>
+                </li>
+              )}
               <li>
                 <a>Settings</a>
               </li>

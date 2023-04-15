@@ -22,13 +22,17 @@ export default function PostMeta({ post }) {
 
   return (
     <>
-      <span className="font-bold">{post.author?.displayName}</span>{" "}
-      <span className="text-gray-400">
-        {shortHandle}
-        {handleDefaultDomain && (
-          <span className="text-gray-700">{handleDefaultDomain}</span>
-        )}
-      </span>{" "}
+      <Link to={`/profile/${handle}`}>
+        <span className="font-bold">{post.author?.displayName}</span>
+      </Link>{" "}
+      <Link to={`/profile/${handle}`}>
+        <span className="text-gray-400">
+          {shortHandle}
+          {handleDefaultDomain && (
+            <span className="text-gray-700">{handleDefaultDomain}</span>
+          )}
+        </span>
+      </Link>{" "}
       {createdAt && (
         <>
           <span className="text-gray-400">{" · "}</span>
