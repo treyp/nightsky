@@ -2,7 +2,7 @@ import PostImages from "./PostImages";
 import PostMeta from "./PostMeta";
 import PostText from "./PostText";
 
-export default function QuotedPost({ post }) {
+export default function QuotedPost({ post, media }) {
   return (
     <div className="border border-accent rounded mt-2 mr-4 p-2">
       <div>
@@ -12,12 +12,8 @@ export default function QuotedPost({ post }) {
           </div>
         </div>{" "}
         <PostMeta post={post} />
-        {post.record && (
-          <PostText text={post.record.text} entities={post.record.entities} />
-        )}
-        {post.embed?.images && (
-          <PostImages post={post} images={post.embed?.images} />
-        )}
+        {post.value && <PostText text={post.value.text} />}
+        {media?.images && <PostImages post={post} images={media?.images} />}
       </div>
     </div>
   );

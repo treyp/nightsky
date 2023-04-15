@@ -40,7 +40,13 @@ export default function Post({ post, isParent, isFeatured }) {
           isFeatured={isFeatured}
         />
       )}
-      {post.embed?.record && <QuotedPost post={post.embed?.record} />}
+      {post.embed?.record && (
+        <QuotedPost
+          post={post.embed.record?.record || post.embed.record}
+          media={post.embed.media}
+          entities={post.embed.record.entities}
+        />
+      )}
       {post.embed?.images && (
         <PostImages post={post} images={post.embed?.images} />
       )}
