@@ -43,8 +43,6 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 Here's an unprioritized list of tasks to do:
 
-- [ ] Support entitites in post text
-- [ ] Add individual post page
 - [ ] Add profile page, link Profile in nav to user's profile page
 - [ ] Add Search page
 - [ ] Add Notifications page

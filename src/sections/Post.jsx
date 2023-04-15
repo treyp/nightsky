@@ -1,33 +1,72 @@
+import { useNavigate } from "react-router-dom";
 import PostImages from "./PostImages";
 import PostInteractions from "./PostInteractions";
 import PostMeta from "./PostMeta";
 import PostText from "./PostText";
 import QuotedPost from "./QuotedPost";
 
-export default function Post({ post, isParent, isReply }) {
+function isNodeInAnchor(node, stopAtNode) {
+  if (!node || node === stopAtNode) {
+    return false;
+  }
   return (
-    <div className="flex pb-2">
-      <div className="flex-none pr-2 flex flex-col">
-        <div className="avatar flex-none">
-          <div className="w-12 rounded-full">
-            <img src={post.author.avatar} />
+    node instanceof HTMLAnchorElement ||
+    isNodeInAnchor(node.parentNode, stopAtNode)
+  );
+}
+
+export default function Post({ post, isParent, isFeatured }) {
+  const navigate = useNavigate();
+
+  const onPostClick = (e) => {
+    console.log("Post clicked", e);
+    if (e.defaultPrevented) {
+      return;
+    }
+    if (isNodeInAnchor(e.target, e.currentTarget)) {
+      return;
+    }
+    const handle = post.author?.handle || "";
+    const recordId = post.uri.split("/").at(-1);
+    navigate(`/profile/${handle}/post/${recordId}`);
+  };
+
+  const postBody = (
+    <>
+      {post.record && (
+        <PostText
+          text={post.record.text}
+          entities={post.record.entities}
+          isFeatured={isFeatured}
+        />
+      )}
+      {post.embed?.record && <QuotedPost post={post.embed?.record} />}
+      {post.embed?.images && (
+        <PostImages post={post} images={post.embed?.images} />
+      )}
+      <PostInteractions post={post} />
+    </>
+  );
+
+  return (
+    <>
+      <div className="flex pb-2" onClick={onPostClick}>
+        <div className="flex-none pr-2 flex flex-col">
+          <div className="avatar flex-none">
+            <div className="w-12 rounded-full">
+              <img src={post.author.avatar} />
+            </div>
           </div>
+          {isParent && !isFeatured && (
+            <div className="bg-gray-800 w-[2px] mx-auto mt-2 flex-1 h-auto min-h-6"></div>
+          )}
         </div>
-        {isParent && (
-          <div className="bg-gray-800 w-[2px] mx-auto mt-2 flex-1 h-auto min-h-6"></div>
-        )}
+        <div className="flex-1 pr-4">
+          <PostMeta post={post} />
+          {!isFeatured && postBody}
+        </div>
       </div>
-      <div className="flex-1 pr-4">
-        <PostMeta post={post} />
-        {post.record && (
-          <PostText text={post.record.text} entities={post.record.entities} />
-        )}
-        {post.embed?.record && <QuotedPost post={post.embed?.record} />}
-        {post.embed?.images && (
-          <PostImages post={post} images={post.embed?.images} />
-        )}
-        <PostInteractions post={post} />
-      </div>
-    </div>
+      {isFeatured && <div>{postBody}</div>}
+    </>
   );
 }

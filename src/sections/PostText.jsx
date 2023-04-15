@@ -118,6 +118,10 @@ function mapFragmentsToComponents(textFragments) {
   });
 }
 
-export default function PostText({ text, entities }) {
-  return <div>{mapFragmentsToComponents(textFragments(text, entities))}</div>;
+export default function PostText({ text, entities, isFeatured }) {
+  return (
+    <div className={isFeatured && "text-xl"}>
+      {mapFragmentsToComponents(textFragments(text, entities))}
+    </div>
+  );
 }

@@ -15,7 +15,7 @@ export default function Feed({ feed }) {
             {feedItem.reply?.parent && (
               <Post post={feedItem.reply.parent} isParent />
             )}
-            <Post post={feedItem.post} isReply={!!feedItem.reply?.parent} />
+            <Post post={feedItem.post} />
           </div>
         ))}
     </div>

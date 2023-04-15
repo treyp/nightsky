@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useAuth } from "../Auth";
 import Timestamp from "../components/Timestamp";
 
@@ -13,6 +14,7 @@ export default function PostMeta({ post }) {
     ? handle.slice(0, -1 * defaultDomain.length)
     : handle;
   const handleDefaultDomain = handleIsInDefaultDomain ? defaultDomain : "";
+  const recordId = post.uri.split("/").at(-1);
 
   const createdAt = post.record?.createdAt
     ? new Date(post.record?.createdAt)
@@ -30,11 +32,9 @@ export default function PostMeta({ post }) {
       {createdAt && (
         <>
           <span className="text-gray-400">{" · "}</span>
-          <Timestamp
-            className="text-gray-400"
-            date={createdAt}
-            onClick={() => console.log(post)}
-          />
+          <Link to={`/profile/${handle}/post/${recordId}`}>
+            <Timestamp className="text-gray-400" date={createdAt} />
+          </Link>
         </>
       )}
     </>
