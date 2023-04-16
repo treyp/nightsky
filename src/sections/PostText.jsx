@@ -1,6 +1,7 @@
 import { RichText } from "@atproto/api";
 import { useEffect, useState } from "react";
 import { useAuth } from "../Auth";
+import { Link } from "react-router-dom";
 
 const LINE_RETURN_REGEX = /[\r\n]/;
 
@@ -25,14 +26,13 @@ function mapSegmentsToComponents(segments) {
   for (const segment of segments) {
     if (segment.isMention()) {
       components.push(
-        <a
-          href="#"
+        <Link
+          to={`/profile/${segment.text.substring(1)}`}
           className="text-primary"
-          onClick={(e) => e.preventDefault()}
           key={segmentIndex}
         >
           {mapTextToComponents(segment.text)}
-        </a>
+        </Link>
       );
     } else if (segment.isLink()) {
       components.push(
