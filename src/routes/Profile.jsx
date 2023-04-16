@@ -4,10 +4,15 @@ import Button from "../components/Button";
 import Feed from "../sections/Feed";
 import FeedSkeleton from "../sections/FeedSkeleton";
 import { useParams } from "react-router-dom";
+import PostText from "../sections/PostText";
+import Handle from "../sections/Handle";
 
 export default function Profile() {
   const { state: authState } = useAuth();
-  const [isFetching, setIsFetching] = useState(false);
+  const [isProfileFetching, setIsProfileFetching] = useState(false);
+  const [isFeedFetching, setIsFeedFetching] = useState(false);
+  const [profile, setProfile] = useState(null);
+  let resetProfile = false;
   const [feed, setFeed] = useState(null);
   let resetFeed = false;
   const [cursor, setCursor] = useState(null);
@@ -22,7 +27,7 @@ export default function Profile() {
     if (cursor && !resetCursor) {
       feedOptions.cursor = cursor;
     }
-    setIsFetching(true);
+    setIsFeedFetching(true);
     authState.agent.api.app.bsky.feed
       .getAuthorFeed(feedOptions)
       .then(({ success, data }) => {
@@ -32,13 +37,26 @@ export default function Profile() {
         console.log("Timeline fetch success", success, data);
         setFeed(((!resetFeed && feed) || []).concat(data.feed));
         setCursor(data.cursor);
-        setIsFetching(false);
         resetFeed = false;
         resetCursor = false;
+        setIsFeedFetching(false);
+      });
+    setIsProfileFetching(true);
+    authState.agent.api.app.bsky.actor
+      .getProfile({ actor: authorHandle })
+      .then(({ success, data }) => {
+        if (!success || !data) {
+          console.error("Profile fetch failed", success, data);
+        }
+        console.log("Profile fetch success", success, data);
+        setProfile(data);
+        setIsProfileFetching(false);
       });
   };
 
   useEffect(() => {
+    // can't use state setters and readers in the same render,
+    // so another variable is required
     resetFeed = true;
     resetCursor = true;
     fetchNextPage();
@@ -50,13 +68,61 @@ export default function Profile() {
 
   return (
     <div className="w-full">
-      {!feed && isFetching && <FeedSkeleton />}
+      {!profile && isProfileFetching && (
+        <div className="animate-pulse w-full">
+          <div className="-mt-4 bg-base-content h-52" />
+          <div className="rounded-full bg-base-content h-24 w-24 ml-2 -mt-12 border-2 border-black"></div>
+          <div className="px-2">
+            <div className="my-6 w-64 h-2 bg-base-content rounded"></div>
+            <div className="my-4 w-48 h-2 bg-base-content rounded"></div>
+            <div className="my-4 grid grid-cols-3 gap-4 w-full max-w-xs">
+              <div className="h-2 bg-base-content rounded"></div>
+              <div className="h-2 bg-base-content rounded"></div>
+              <div className="h-2 bg-base-content rounded"></div>
+            </div>
+            <div className="my-4 w-64 h-2 bg-base-content rounded"></div>
+          </div>
+        </div>
+      )}
+      {profile && (
+        <div className="-mt-4 border-b border-gray-800 mb-4 pb-4">
+          {profile.banner ? (
+            <img src={profile.banner} className="max-w-full" />
+          ) : (
+            <div className="bg-primary h-52" />
+          )}
+          <div className="avatar flex-none ml-2 -mt-12">
+            <div className="w-24 rounded-full">
+              {profile.avatar ? (
+                <a href={profile.avatar}>
+                  <img src={profile.avatar} />
+                </a>
+              ) : (
+                <div className="bg-primary border-2 border-primary-content w-full h-full block align-middle rounded-full text-primary-content text-center text-3xl"></div>
+              )}
+            </div>
+          </div>
+          <div className="px-2">
+            <h2 className="text-2xl">{profile.displayName}</h2>
+            <h3 className="text-gray-400">
+              @<Handle handle={profile.handle} />
+            </h3>
+            <div className="my-2 text-sm">
+              <strong>{profile.followersCount}</strong> followers ·{" "}
+              <strong>{profile.followsCount}</strong> following ·{" "}
+              <strong>{profile.postsCount}</strong> posts
+            </div>
+            <PostText text={profile.description} />
+          </div>
+        </div>
+      )}
+      {!feed && isFeedFetching && <FeedSkeleton />}
       {feed && <Feed feed={feed} />}
       {feed && (
         <Button
-          className={`btn-block my-4 ${isFetching && "loading"}`}
+          className={`btn-block my-4 ${isFeedFetching && "loading"}`}
           onClick={showMore}
-          disabled={isFetching}
+          disabled={isFeedFetching}
         >
           Show more
         </Button>
