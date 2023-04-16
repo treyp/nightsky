@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PostImages from "./PostImages";
 import PostInteractions from "./PostInteractions";
 import PostMeta from "./PostMeta";
@@ -17,6 +17,8 @@ function isNodeInAnchor(node, stopAtNode) {
 
 export default function Post({ post, isParent, isFeatured }) {
   const navigate = useNavigate();
+  const handle = post.author?.handle || "";
+  const recordId = post.uri.split("/").at(-1);
 
   const onPostClick = (e) => {
     console.log("Post clicked", e);
@@ -26,8 +28,6 @@ export default function Post({ post, isParent, isFeatured }) {
     if (isNodeInAnchor(e.target, e.currentTarget)) {
       return;
     }
-    const handle = post.author?.handle || "";
-    const recordId = post.uri.split("/").at(-1);
     navigate(`/profile/${handle}/post/${recordId}`);
   };
 
@@ -55,7 +55,9 @@ export default function Post({ post, isParent, isFeatured }) {
         <div className="flex-none pr-2 flex flex-col">
           <div className="avatar flex-none">
             <div className="w-12 rounded-full">
-              <img src={post.author.avatar} />
+              <Link to={`/profile/${handle}`}>
+                <img src={post.author.avatar} />
+              </Link>
             </div>
           </div>
           {isParent && !isFeatured && (
