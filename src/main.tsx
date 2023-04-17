@@ -1,10 +1,5 @@
 import ReactDOM from "react-dom/client";
-import {
-  Route,
-  RouterProvider,
-  createHashRouter,
-  createRoutesFromElements,
-} from "react-router-dom";
+import { RouterProvider, createHashRouter } from "react-router-dom";
 import App from "./App";
 import { RequireAuth } from "./Auth";
 import "./index.css";
