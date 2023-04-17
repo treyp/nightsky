@@ -1,7 +1,14 @@
-import Code from "../components/Code";
+import {
+  FeedViewPost,
+  ReasonRepost,
+} from "@atproto/api/dist/client/types/app/bsky/feed/defs";
 import Post from "./Post";
 
-export default function Feed({ feed }) {
+interface FeedProps {
+  feed: FeedViewPost[];
+}
+
+export default function Feed({ feed }: FeedProps) {
   return (
     <div>
       {feed &&
@@ -9,7 +16,7 @@ export default function Feed({ feed }) {
           <div
             className="border-b border-gray-800 my-2 px-4"
             key={`${feedItem.post?.cid}${feedItem.reason?.$type || ""}${
-              feedItem.reason?.by?.did || ""
+              (feedItem.reason as ReasonRepost)?.by?.did || ""
             }`}
           >
             {feedItem.reply?.parent && (

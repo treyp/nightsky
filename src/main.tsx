@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import App from "./App";
@@ -10,7 +9,7 @@ import ErrorPage from "./sections/ErrorPage";
 import PostRoute from "./routes/PostRoute";
 import Profile from "./routes/Profile";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <HashRouter>
     <Routes>
       <Route path="/" element={<App />} errorElement={<ErrorPage />}>

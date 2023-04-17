@@ -1,4 +1,13 @@
-export default function PostImages({ post, images }) {
+import { ViewImage } from "@atproto/api/dist/client/types/app/bsky/embed/images";
+import { ViewRecord } from "@atproto/api/dist/client/types/app/bsky/embed/record";
+import { PostView } from "@atproto/api/dist/client/types/app/bsky/feed/defs";
+
+interface PostImagesProps {
+  post: PostView | ViewRecord;
+  images: ViewImage[];
+}
+
+export default function PostImages({ post, images }: PostImagesProps) {
   return (
     <div className="my-4">
       {images.map((image, imageKey) => (

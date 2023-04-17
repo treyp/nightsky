@@ -9,7 +9,7 @@ export default function ErrorPage() {
       <h1 className="text-2xl">Error</h1>
       <p className="my-4">An unexpected error has occurred:</p>
       <p className="text-error-content">
-        <i>{error.statusText || error.message}</i>
+        <i>{error instanceof Error && error.message}</i>
       </p>
     </div>
   );

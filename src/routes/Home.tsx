@@ -3,18 +3,22 @@ import { useAuth } from "../Auth";
 import Button from "../components/Button";
 import Feed from "../sections/Feed";
 import FeedSkeleton from "../sections/FeedSkeleton";
+import {
+  QueryParams,
+  OutputSchema,
+} from "@atproto/api/dist/client/types/app/bsky/feed/getTimeline";
 
 export default function Home() {
   const { state: authState } = useAuth();
   const [isFetching, setIsFetching] = useState(false);
-  const [feed, setFeed] = useState(null);
-  const [cursor, setCursor] = useState(null);
+  const [feed, setFeed] = useState<OutputSchema["feed"]>();
+  const [cursor, setCursor] = useState<OutputSchema["cursor"]>();
 
   const fetchNextPage = () => {
     if (!authState.agent) {
       return;
     }
-    const timelineOptions = { limit: 50 };
+    const timelineOptions: QueryParams = { limit: 50 };
     if (cursor) {
       timelineOptions.cursor = cursor;
     }
