@@ -7,11 +7,13 @@ import QuotedPost from "./QuotedPost";
 import { PostView } from "@atproto/api/dist/client/types/app/bsky/feed/defs";
 import { Record } from "@atproto/api/dist/client/types/app/bsky/feed/post";
 import {
+  AppBskyEmbedExternal,
   AppBskyEmbedImages,
   AppBskyEmbedRecord,
   AppBskyEmbedRecordWithMedia,
 } from "@atproto/api";
 import Avatar from "./Avatar";
+import PostLinkPreview from "./PostLinkPreview";
 
 function isNodeInAnchor(node: Node, stopAtNode: Node): boolean {
   if (!node || node === stopAtNode) {
@@ -47,12 +49,16 @@ export default function Post({ post, isParent, isFeatured }: PostProps) {
   const embedImages = post.embed?.images as
     | AppBskyEmbedImages.View["images"]
     | undefined;
+  const embedExternal = post.embed?.external as
+    | AppBskyEmbedExternal.View["external"]
+    | undefined;
 
   const postBody = (
     <>
       {record?.text && <PostText text={record.text} isFeatured={isFeatured} />}
       {embedRecord && <QuotedPost record={embedRecord} media={embedMedia} />}
       {embedImages && <PostImages post={post} images={embedImages} />}
+      {embedExternal && <PostLinkPreview external={embedExternal} />}
       <PostInteractions post={post} />
     </>
   );

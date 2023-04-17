@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const LINE_RETURN_REGEX = /[\r\n]/;
 
 // handles line breaks
-function mapTextToComponents(text: string) {
+export function mapTextToComponents(text: string) {
   if (!text.match(LINE_RETURN_REGEX)) {
     return text;
   }
