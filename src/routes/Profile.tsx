@@ -20,6 +20,7 @@ export default function Profile() {
   const [isProfileFetching, setIsProfileFetching] = useState(false);
   const [isFeedFetching, setIsFeedFetching] = useState(false);
   const [profile, setProfile] = useState<ProfileViewDetailed>();
+  let resetProfile = false;
   const [feed, setFeed] = useState<OutputSchema["feed"]>();
   let resetFeed = false;
   const [cursor, setCursor] = useState<OutputSchema["cursor"]>();
@@ -57,6 +58,7 @@ export default function Profile() {
         }
         console.log("Profile fetch success", success, data);
         setProfile(data);
+        resetProfile = false;
         setIsProfileFetching(false);
       });
   };
@@ -65,9 +67,20 @@ export default function Profile() {
     // can't use state setters and readers in the same render,
     // so another variable is required
     resetFeed = true;
+    setFeed(undefined);
     resetCursor = true;
+    setCursor(undefined);
+    resetProfile = true;
+    setProfile(undefined);
     fetchNextPage();
   }, [authState.agent, authorHandle]);
+
+  useEffect(() => {
+    const contentColumn = document.getElementById("content-column");
+    if (contentColumn) {
+      contentColumn.scrollTop = 0;
+    }
+  }, [authorHandle]);
 
   const showMore = () => {
     fetchNextPage();
@@ -75,8 +88,8 @@ export default function Profile() {
 
   return (
     <div className="w-full">
-      {!profile && isProfileFetching && (
-        <div className="animate-pulse w-full">
+      {((!profile && isProfileFetching) || resetProfile) && (
+        <div className="animate-pulse w-full border-b border-gray-800 mb-4 pb-4">
           <div className="-mt-4 bg-base-content h-52" />
           <div className="rounded-full bg-base-content h-24 w-24 ml-2 -mt-12 border-2 border-black"></div>
           <div className="px-2">
@@ -91,10 +104,10 @@ export default function Profile() {
           </div>
         </div>
       )}
-      {profile && (
+      {profile && !resetProfile && (
         <div className="-mt-4 border-b border-gray-800 mb-4 pb-4">
           {profile.banner ? (
-            <img src={profile.banner} className="max-w-full" />
+            <img src={profile.banner} className="w-full aspect-[3/1]" />
           ) : (
             <div className="bg-primary h-52" />
           )}
@@ -117,9 +130,9 @@ export default function Profile() {
           </div>
         </div>
       )}
-      {!feed && isFeedFetching && <FeedSkeleton />}
-      {feed && <Feed feed={feed} />}
-      {!resetFeed && feed && (
+      {(!feed || resetFeed) && isFeedFetching && <FeedSkeleton />}
+      {feed && !resetFeed && <Feed feed={feed} />}
+      {feed && !resetFeed && (
         <ShowMoreFeed
           loading={isFeedFetching}
           onClick={showMore}
