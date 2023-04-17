@@ -1,4 +1,4 @@
-export function setLocalStorage(key, value) {
+export function setLocalStorage(key: string, value: string) {
   try {
     localStorage.setItem(key, value);
   } catch (error) {
@@ -6,10 +6,10 @@ export function setLocalStorage(key, value) {
   }
 }
 
-export function removeItemLocalStorage(key) {
+export function removeItemLocalStorage(key: string) {
   localStorage.removeItem(key);
 }
 
-export function getLocalStorage(key) {
+export function getLocalStorage(key: string) {
   return localStorage.getItem(key);
 }

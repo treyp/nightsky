@@ -1,16 +1,24 @@
 import { useAuth } from "../Auth";
 
-export default function Handle({ handle }) {
+interface HandleProps {
+  handle: string;
+}
+
+export default function Handle({ handle }: HandleProps) {
   const { state: authState } = useAuth();
 
-  const defaultDomain = `.${authState.service.slice(
-    authState.service.indexOf("//") + "//".length
-  )}`;
-  const handleIsInDefaultDomain = handle.endsWith(defaultDomain);
+  const defaultDomain = authState.service
+    ? `.${authState.service.slice(
+        authState.service.indexOf("//") + "//".length
+      )}`
+    : "";
+  const handleIsInDefaultDomain =
+    defaultDomain && handle.endsWith(defaultDomain);
   const shortHandle = handleIsInDefaultDomain
     ? handle.slice(0, -1 * defaultDomain.length)
     : handle;
   const handleDefaultDomain = handleIsInDefaultDomain ? defaultDomain : "";
+
   return (
     <span className="text-gray-400">
       {shortHandle}

@@ -1,3 +1,4 @@
+import { PostView } from "@atproto/api/dist/client/types/app/bsky/feed/defs";
 import {
   ChatBubbleBottomCenterIcon,
   ArrowPathRoundedSquareIcon,
@@ -5,7 +6,11 @@ import {
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 
-export default function PostInteractions({ post }) {
+interface PostInteractionsProps {
+  post: PostView;
+}
+
+export default function PostInteractions({ post }: PostInteractionsProps) {
   const recordId = post.uri.split("/").at(-1);
   return (
     <div className="text-gray-400 mt-2 text-sm grid grid-cols-3 gap-8 w-60">
@@ -31,7 +36,7 @@ export default function PostInteractions({ post }) {
         }}
       >
         <HeartIcon className="h-4 w-4 inline-block stroke-2 mr-2" />
-        {post.upvoteCount || ""}
+        {post.likeCount || ""}
       </a>
     </div>
   );

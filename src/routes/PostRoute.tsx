@@ -4,19 +4,26 @@ import { useParams } from "react-router-dom";
 import PostSkeleton from "../sections/PostSkeleton";
 import Post from "../sections/Post";
 import classNames from "classnames";
+import { ThreadViewPost } from "@atproto/api/dist/client/types/app/bsky/feed/defs";
 
-function RecursiveParent({ threadViewPost }) {
+interface ThreadViewProps {
+  threadViewPost: ThreadViewPost;
+}
+
+function RecursiveParent({ threadViewPost }: ThreadViewProps) {
   return (
     <>
       {threadViewPost.parent && (
-        <RecursiveParent threadViewPost={threadViewPost.parent} />
+        <RecursiveParent
+          threadViewPost={threadViewPost.parent as ThreadViewPost}
+        />
       )}
       {threadViewPost.post && <Post post={threadViewPost.post} isParent />}
     </>
   );
 }
 
-function RecursiveReply({ threadViewPost }) {
+function RecursiveReply({ threadViewPost }: ThreadViewProps) {
   return (
     <>
       {threadViewPost.post && (
@@ -26,7 +33,10 @@ function RecursiveReply({ threadViewPost }) {
         />
       )}
       {threadViewPost.replies?.map((reply) => (
-        <RecursiveReply threadViewPost={reply} key={reply.post?.cid} />
+        <RecursiveReply
+          threadViewPost={reply as ThreadViewPost}
+          key={(reply as ThreadViewPost).post?.cid}
+        />
       ))}
     </>
   );
@@ -35,15 +45,16 @@ function RecursiveReply({ threadViewPost }) {
 export default function PostRoute() {
   const { state: authState } = useAuth();
   const [isFetching, setIsFetching] = useState(false);
-  const [thread, setThread] = useState(null);
+  const [thread, setThread] = useState<ThreadViewPost>();
   const { authorHandle, postRecordId } = useParams();
 
   const fetchPost = () => {
-    if (!authState.agent || !postRecordId || !authorHandle) {
+    const agent = authState.agent;
+    if (!agent || !postRecordId || !authorHandle) {
       return;
     }
     setIsFetching(true);
-    authState.agent.api.app.bsky.actor
+    agent.api.app.bsky.actor
       .getProfile({ actor: authorHandle })
       .then(({ success: profileSuccess, data: profileData }) => {
         if (!profileSuccess || !profileData) {
@@ -52,7 +63,7 @@ export default function PostRoute() {
           return;
         }
         console.log("Profile fetch success", profileSuccess, profileData);
-        authState.agent.api.app.bsky.feed
+        agent.api.app.bsky.feed
           .getPostThread({
             uri: `at://${profileData.did}/app.bsky.feed.post/${postRecordId}`,
           })
@@ -69,7 +80,7 @@ export default function PostRoute() {
                 threadSuccess,
                 threadData
               );
-              setThread(threadData.thread);
+              setThread(threadData.thread as ThreadViewPost);
             }
             setIsFetching(false);
           });
@@ -83,7 +94,9 @@ export default function PostRoute() {
   return (
     <div className="w-full">
       {!thread && isFetching && <PostSkeleton />}
-      {thread?.parent && <RecursiveParent threadViewPost={thread.parent} />}
+      {thread?.parent && (
+        <RecursiveParent threadViewPost={thread.parent as ThreadViewPost} />
+      )}
       {thread && (
         <div
           className={classNames("border-gray-800", {
@@ -99,7 +112,10 @@ export default function PostRoute() {
         </div>
       )}
       {thread?.replies?.map((reply) => (
-        <RecursiveReply threadViewPost={reply} key={reply.post?.cid} />
+        <RecursiveReply
+          threadViewPost={reply as ThreadViewPost}
+          key={(reply as ThreadViewPost).post?.cid}
+        />
       ))}
     </div>
   );

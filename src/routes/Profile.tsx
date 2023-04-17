@@ -6,24 +6,28 @@ import FeedSkeleton from "../sections/FeedSkeleton";
 import { useParams } from "react-router-dom";
 import PostText from "../sections/PostText";
 import Handle from "../sections/Handle";
+import { ProfileViewDetailed } from "@atproto/api/dist/client/types/app/bsky/actor/defs";
+import {
+  OutputSchema,
+  QueryParams,
+} from "@atproto/api/dist/client/types/app/bsky/feed/getAuthorFeed";
 
 export default function Profile() {
   const { state: authState } = useAuth();
   const [isProfileFetching, setIsProfileFetching] = useState(false);
   const [isFeedFetching, setIsFeedFetching] = useState(false);
-  const [profile, setProfile] = useState(null);
-  let resetProfile = false;
-  const [feed, setFeed] = useState(null);
+  const [profile, setProfile] = useState<ProfileViewDetailed>();
+  const [feed, setFeed] = useState<OutputSchema["feed"]>();
   let resetFeed = false;
-  const [cursor, setCursor] = useState(null);
+  const [cursor, setCursor] = useState<OutputSchema["cursor"]>();
   let resetCursor = false;
   const { authorHandle } = useParams();
 
   const fetchNextPage = () => {
-    if (!authState.agent) {
+    if (!authState.agent || !authorHandle) {
       return;
     }
-    const feedOptions = { actor: authorHandle, limit: 50 };
+    const feedOptions: QueryParams = { actor: authorHandle, limit: 50 };
     if (cursor && !resetCursor) {
       feedOptions.cursor = cursor;
     }
@@ -112,7 +116,7 @@ export default function Profile() {
               <strong>{profile.followsCount}</strong> following ·{" "}
               <strong>{profile.postsCount}</strong> posts
             </div>
-            <PostText text={profile.description} />
+            {profile.description && <PostText text={profile.description} />}
           </div>
         </div>
       )}

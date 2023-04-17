@@ -2,7 +2,11 @@ import classNames from "classnames";
 import { Link } from "react-router-dom";
 import { SparklesIcon } from "@heroicons/react/24/solid";
 
-export default function AppTitle(props) {
+interface AppTitleProps {
+  className?: string;
+}
+
+export default function AppTitle(props: AppTitleProps) {
   return (
     <h1 className={classNames("text-2xl", props.className)}>
       <Link

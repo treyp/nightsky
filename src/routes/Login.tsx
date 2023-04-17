@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, FormEvent } from "react";
 import { getLastUsedService, useAuth } from "../Auth";
 import Input from "../components/Input";
 import Label from "../components/Label";
@@ -8,20 +8,24 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [isSubmitting, setSubmitting] = useState(false);
-  const form = useRef(null);
+  const form = useRef<HTMLFormElement>(null);
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = location.state?.from?.pathname || "/";
 
-  const onFormSubmit = (submitEvent) => {
+  const onFormSubmit = (submitEvent: FormEvent<HTMLFormElement>) => {
     submitEvent.preventDefault();
 
+    if (!form.current) {
+      return;
+    }
+
     const formData = new FormData(form.current);
-    const service = formData.get("service");
-    const identifier = formData.get("identifier");
-    const password = formData.get("password");
+    const service = formData.get("service") as string;
+    const identifier = formData.get("identifier") as string;
+    const password = formData.get("password") as string;
 
     setSubmitting(true);
     login(service, identifier, password)

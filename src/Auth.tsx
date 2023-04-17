@@ -1,11 +1,19 @@
-import { useReducer, createContext, useEffect, useContext } from "react";
+import {
+  useReducer,
+  createContext,
+  useEffect,
+  useContext,
+  ReactNode,
+  Dispatch,
+} from "react";
 import {
   getLocalStorage,
   removeItemLocalStorage,
   setLocalStorage,
 } from "./utils/localStorage";
-import { Navigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AtpAgent } from "@atproto/api";
+import { OutputSchema } from "@atproto/api/dist/client/types/com/atproto/server/getSession";
 
 // Local storage keys
 export const SERVICE_LOCAL_STORAGE_KEY = "service";
@@ -19,15 +27,41 @@ export const AUTH_ACTION_RESUME_SESSION_SUCCESS = "RESUME_SESSION_SUCCESS";
 export const AUTH_ACTION_LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const AUTH_ACTION_LOGOUT = "LOGOUT";
 
-const initialAuthState = {
-  service: null,
-  session: null,
-  agent: null,
+interface AuthState {
+  service?: string;
+  session?: OutputSchema;
+  agent?: AtpAgent;
+  isResuming: boolean;
+  isInitialized: boolean;
+}
+
+const initialAuthState: AuthState = {
+  service: undefined,
+  session: undefined,
+  agent: undefined,
   isResuming: false,
   isInitialized: false,
 };
 
-const authReducer = (state, action) => {
+type AuthSuccessResponse = Required<
+  Pick<AuthState, "service" | "session" | "agent">
+>;
+
+type AuthReducerAction =
+  | { type: typeof AUTH_ACTION_INIT_COMPLETE }
+  | { type: typeof AUTH_ACTION_RESUME_SESSION }
+  | { type: typeof AUTH_ACTION_RESUME_SESSION_FAIL }
+  | {
+      type: typeof AUTH_ACTION_RESUME_SESSION_SUCCESS;
+      payload: AuthSuccessResponse;
+    }
+  | {
+      type: typeof AUTH_ACTION_LOGIN_SUCCESS;
+      payload: AuthSuccessResponse;
+    }
+  | { type: typeof AUTH_ACTION_LOGOUT };
+
+const authReducer = (state: AuthState, action: AuthReducerAction) => {
   console.log("Auth reducer action dispatched", action.type);
   switch (action.type) {
     case AUTH_ACTION_INIT_COMPLETE:
@@ -61,17 +95,28 @@ const authReducer = (state, action) => {
       removeItemLocalStorage(SESSION_LOCAL_STORAGE_KEY);
       return {
         ...state,
-        session: null,
-        agent: null,
+        session: undefined,
+        agent: undefined,
       };
     default:
       return state;
   }
 };
 
-export const AuthContext = createContext();
+interface AuthContextType {
+  state: AuthState;
+  dispatch: Dispatch<AuthReducerAction>;
+  login: (
+    service: string,
+    identifier: string,
+    password: string
+  ) => Promise<OutputSchema>;
+  logout: () => void;
+}
 
-export function AuthProvider({ children }) {
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [authState, authDispatch] = useReducer(authReducer, initialAuthState);
 
   // Attempt to resume session on page load
@@ -90,7 +135,7 @@ export function AuthProvider({ children }) {
   // not the current one:
   // https://developer.mozilla.org/en-US/docs/Web/API/Window/storage_event
   useEffect(() => {
-    function handleStorageEvent(storageEvent) {
+    function handleStorageEvent(storageEvent: StorageEvent) {
       if (storageEvent.storageArea !== localStorage) {
         return;
       }
@@ -108,11 +153,11 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  const login = (service, identifier, password) => {
+  const login: AuthContextType["login"] = (service, identifier, password) => {
     return attemptLogin(authDispatch, service, identifier, password);
   };
 
-  const logout = () => {
+  const logout: AuthContextType["logout"] = () => {
     authDispatch({ type: AUTH_ACTION_LOGOUT });
   };
 
@@ -125,22 +170,28 @@ export function AuthProvider({ children }) {
   );
 }
 
-export function RequireAuth({ children }) {
+export function RequireAuth({ children }: { children: ReactNode }) {
   let { state } = useAuth();
   let location = useLocation();
+  let navigate = useNavigate();
 
   if (state.isInitialized && !state.agent) {
     // Redirect them to the /login page, but save the current location they were
     // trying to go to when they were redirected. This allows us to send them
     // along to that page after they sign in.
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    navigate("/login", { state: { from: location }, replace: true });
+    return null;
   }
 
-  return children;
+  return <>{children}</>;
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("AuthContext has not been provided");
+  }
+  return context;
 }
 
 export function getLastUsedService() {
@@ -148,15 +199,30 @@ export function getLastUsedService() {
 }
 
 // Returns a promise that resolves when resuming session was successful, rejects when not
-export function attemptResumeSession(authDispatch) {
+export function attemptResumeSession(
+  authDispatch: AuthContextType["dispatch"]
+): Promise<AuthSuccessResponse> {
   return new Promise((resolve, reject) => {
     const service = getLocalStorage(SERVICE_LOCAL_STORAGE_KEY);
+    if (!service) {
+      const errorReason = "Service not specified in localStorage";
+      console.error(errorReason);
+      reject(errorReason);
+      return;
+    }
     const agent = new AtpAgent({
       service: service,
     });
     let session;
+    const savedSession = getLocalStorage(SESSION_LOCAL_STORAGE_KEY);
+    if (!savedSession) {
+      const errorReason = "Session not found in localStorage";
+      console.error(errorReason);
+      reject(errorReason);
+      return;
+    }
     try {
-      session = JSON.parse(getLocalStorage(SESSION_LOCAL_STORAGE_KEY));
+      session = JSON.parse(savedSession);
     } catch (error) {
       const errorReason = "Could not deserialize session data";
       console.error(errorReason);
@@ -195,7 +261,12 @@ export function attemptResumeSession(authDispatch) {
 }
 
 // Returns a promise that resolves when login was successful, rejects when not
-export function attemptLogin(authDispatch, service, identifier, password) {
+export function attemptLogin(
+  authDispatch: AuthContextType["dispatch"],
+  service: string,
+  identifier: string,
+  password: string
+): Promise<OutputSchema> {
   return new Promise((resolve, reject) => {
     const agent = new AtpAgent({ service: service });
 

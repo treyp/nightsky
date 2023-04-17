@@ -47,6 +47,5 @@ Here's an unprioritized list of tasks to do:
 - [ ] Add Notifications page
 - [ ] Add Settings page
 - [ ] Support light mode with override in settings page
-- [ ] TypeScript support
 - [ ] Offline mode with cached data
 - [ ] Move these TODO items to GitHub Issues once the repo is more stable

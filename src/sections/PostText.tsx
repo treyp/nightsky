@@ -1,12 +1,12 @@
 import { RichText } from "@atproto/api";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useAuth } from "../Auth";
 import { Link } from "react-router-dom";
 
 const LINE_RETURN_REGEX = /[\r\n]/;
 
 // handles line breaks
-function mapTextToComponents(text) {
+function mapTextToComponents(text: string) {
   if (!text.match(LINE_RETURN_REGEX)) {
     return text;
   }
@@ -20,7 +20,7 @@ function mapTextToComponents(text) {
     });
 }
 
-function mapSegmentsToComponents(segments) {
+function mapSegmentsToComponents(segments: ReturnType<RichText["segments"]>) {
   const components = [];
   let segmentIndex = 0;
   for (const segment of segments) {
@@ -56,9 +56,14 @@ function mapSegmentsToComponents(segments) {
   return components;
 }
 
-export default function PostText({ text, isFeatured }) {
+interface PostTextProps {
+  text: string;
+  isFeatured?: boolean;
+}
+
+export default function PostText({ text, isFeatured }: PostTextProps) {
   const { state: authState } = useAuth();
-  const [formattedText, setFormattedText] = useState(text);
+  const [formattedText, setFormattedText] = useState<ReactNode>(text);
 
   useEffect(() => {
     const richText = new RichText({ text });
@@ -70,5 +75,5 @@ export default function PostText({ text, isFeatured }) {
     });
   }, [authState.agent, text]);
 
-  return <div className={isFeatured && "text-xl"}>{formattedText}</div>;
+  return <div className={isFeatured ? "text-xl" : ""}>{formattedText}</div>;
 }

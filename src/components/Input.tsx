@@ -1,6 +1,11 @@
 import classNames from "classnames";
+import { ComponentPropsWithoutRef } from "react";
 
-export default function Input(props) {
+interface InputProps extends ComponentPropsWithoutRef<"input"> {
+  className?: string;
+}
+
+export default function Input(props: InputProps) {
   return (
     <input
       {...props}
