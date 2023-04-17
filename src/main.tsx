@@ -1,5 +1,10 @@
 import ReactDOM from "react-dom/client";
-import { HashRouter, Route, Routes } from "react-router-dom";
+import {
+  Route,
+  RouterProvider,
+  createHashRouter,
+  createRoutesFromElements,
+} from "react-router-dom";
 import App from "./App";
 import { RequireAuth } from "./Auth";
 import "./index.css";
@@ -9,36 +14,44 @@ import ErrorPage from "./sections/ErrorPage";
 import PostRoute from "./routes/PostRoute";
 import Profile from "./routes/Profile";
 
+const router = createHashRouter([
+  {
+    path: "/",
+    element: <App />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        index: true,
+        element: (
+          <RequireAuth>
+            <Home />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: "/profile/:authorHandle",
+        element: (
+          <RequireAuth>
+            <Profile />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: "/profile/:authorHandle/post/:postRecordId",
+        element: (
+          <RequireAuth>
+            <PostRoute />
+          </RequireAuth>
+        ),
+      },
+    ],
+  },
+]);
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <HashRouter>
-    <Routes>
-      <Route path="/" element={<App />} errorElement={<ErrorPage />}>
-        <Route path="/login" element={<Login />} />
-        <Route
-          index
-          element={
-            <RequireAuth>
-              <Home />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/profile/:authorHandle"
-          element={
-            <RequireAuth>
-              <Profile />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/profile/:authorHandle/post/:postRecordId"
-          element={
-            <RequireAuth>
-              <PostRoute />
-            </RequireAuth>
-          }
-        />
-      </Route>
-    </Routes>
-  </HashRouter>
+  <RouterProvider router={router} />
 );
