@@ -86,6 +86,18 @@ export default function Profile() {
     fetchNextPage();
   };
 
+  let avatar = null;
+  if (profile) {
+    avatar = <Avatar avatar={profile.avatar} handle={authorHandle} />;
+    if (profile.avatar) {
+      avatar = (
+        <a href={profile.avatar} target="_blank">
+          {avatar}
+        </a>
+      );
+    }
+  }
+
   return (
     <div className="w-full">
       {((!profile && isProfileFetching) || resetProfile) && (
@@ -112,9 +124,7 @@ export default function Profile() {
             <div className="bg-primary h-52" />
           )}
           <div className="avatar flex-none ml-2 -mt-12">
-            <div className="w-24 rounded-full">
-              <Avatar avatar={profile.avatar} handle={authorHandle} />
-            </div>
+            <div className="w-24 rounded-full">{avatar}</div>
           </div>
           <div className="px-2">
             <h2 className="text-2xl">{profile.displayName}</h2>
