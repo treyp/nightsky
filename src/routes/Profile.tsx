@@ -11,6 +11,7 @@ import {
   OutputSchema,
   QueryParams,
 } from "@atproto/api/dist/client/types/app/bsky/feed/getAuthorFeed";
+import Avatar from "../sections/Avatar";
 
 export default function Profile() {
   const { state: authState } = useAuth();
@@ -97,13 +98,7 @@ export default function Profile() {
           )}
           <div className="avatar flex-none ml-2 -mt-12">
             <div className="w-24 rounded-full">
-              {profile.avatar ? (
-                <a href={profile.avatar}>
-                  <img src={profile.avatar} />
-                </a>
-              ) : (
-                <div className="bg-primary border-2 border-primary-content w-full h-full block align-middle rounded-full text-primary-content text-center text-3xl"></div>
-              )}
+              <Avatar avatar={profile.avatar} handle={authorHandle} />
             </div>
           </div>
           <div className="px-2">

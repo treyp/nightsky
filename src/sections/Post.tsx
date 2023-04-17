@@ -11,6 +11,7 @@ import {
   AppBskyEmbedRecord,
   AppBskyEmbedRecordWithMedia,
 } from "@atproto/api";
+import Avatar from "./Avatar";
 
 function isNodeInAnchor(node: Node, stopAtNode: Node): boolean {
   if (!node || node === stopAtNode) {
@@ -78,7 +79,7 @@ export default function Post({ post, isParent, isFeatured }: PostProps) {
           <div className="avatar flex-none">
             <div className="w-12 rounded-full">
               <Link to={`/profile/${handle}`}>
-                <img src={post.author.avatar} />
+                <Avatar avatar={post.author.avatar} handle={handle} />
               </Link>
             </div>
           </div>
