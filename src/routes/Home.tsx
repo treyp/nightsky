@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../Auth";
-import Button from "../components/Button";
 import Feed from "../sections/Feed";
 import FeedSkeleton from "../sections/FeedSkeleton";
 import {
   QueryParams,
   OutputSchema,
 } from "@atproto/api/dist/client/types/app/bsky/feed/getTimeline";
+import ShowMoreFeed from "../sections/ShowMoreFeed";
+
+const FEED_LIMIT = 50;
 
 export default function Home() {
   const { state: authState } = useAuth();
@@ -18,7 +20,7 @@ export default function Home() {
     if (!authState.agent) {
       return;
     }
-    const timelineOptions: QueryParams = { limit: 50 };
+    const timelineOptions: QueryParams = { limit: FEED_LIMIT };
     if (cursor) {
       timelineOptions.cursor = cursor;
     }
@@ -49,13 +51,11 @@ export default function Home() {
       {!feed && isFetching && <FeedSkeleton />}
       {feed && <Feed feed={feed} />}
       {feed && (
-        <Button
-          className={`btn-block my-4 ${isFetching && "loading"}`}
+        <ShowMoreFeed
+          loading={isFetching}
           onClick={showMore}
-          disabled={isFetching}
-        >
-          Show more
-        </Button>
+          isMore={feed.length % FEED_LIMIT === 0}
+        />
       )}
     </div>
   );

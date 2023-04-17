@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../Auth";
-import Button from "../components/Button";
 import Feed from "../sections/Feed";
 import FeedSkeleton from "../sections/FeedSkeleton";
 import { useParams } from "react-router-dom";
@@ -12,6 +11,9 @@ import {
   QueryParams,
 } from "@atproto/api/dist/client/types/app/bsky/feed/getAuthorFeed";
 import Avatar from "../sections/Avatar";
+import ShowMoreFeed from "../sections/ShowMoreFeed";
+
+const FEED_LIMIT = 50;
 
 export default function Profile() {
   const { state: authState } = useAuth();
@@ -28,7 +30,7 @@ export default function Profile() {
     if (!authState.agent || !authorHandle) {
       return;
     }
-    const feedOptions: QueryParams = { actor: authorHandle, limit: 50 };
+    const feedOptions: QueryParams = { actor: authorHandle, limit: FEED_LIMIT };
     if (cursor && !resetCursor) {
       feedOptions.cursor = cursor;
     }
@@ -117,14 +119,12 @@ export default function Profile() {
       )}
       {!feed && isFeedFetching && <FeedSkeleton />}
       {feed && <Feed feed={feed} />}
-      {feed && (
-        <Button
-          className={`btn-block my-4 ${isFeedFetching && "loading"}`}
+      {!resetFeed && feed && (
+        <ShowMoreFeed
+          loading={isFeedFetching}
           onClick={showMore}
-          disabled={isFeedFetching}
-        >
-          Show more
-        </Button>
+          isMore={feed.length % FEED_LIMIT === 0}
+        />
       )}
     </div>
   );
