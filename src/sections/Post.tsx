@@ -66,7 +66,7 @@ export default function Post({ post, isParent, isFeatured }: PostProps) {
   return (
     <>
       <div
-        className="flex pb-2"
+        className="grid grid-cols-[3rem_1fr] gap-2 pb-2"
         onClick={(e) => {
           console.log("Post clicked", e);
           if (e.defaultPrevented) {
@@ -81,7 +81,7 @@ export default function Post({ post, isParent, isFeatured }: PostProps) {
           navigate(`/profile/${handle}/post/${recordId}`);
         }}
       >
-        <div className="flex-none pr-2 flex flex-col">
+        <div className="flex flex-col">
           <div className="avatar flex-none">
             <div className="w-12 rounded-full">
               <Link to={`/profile/${handle}`}>
@@ -93,7 +93,7 @@ export default function Post({ post, isParent, isFeatured }: PostProps) {
             <div className="bg-gray-800 w-[2px] mx-auto mt-2 flex-1 h-auto min-h-6"></div>
           )}
         </div>
-        <div className="flex-1 pr-4">
+        <div className="pr-4 overflow-hidden">
           <PostMeta post={post} />
           {!isFeatured && postBody}
         </div>

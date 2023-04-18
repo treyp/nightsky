@@ -76,10 +76,7 @@ export default function Profile() {
   }, [authState.agent, authorHandle]);
 
   useEffect(() => {
-    const contentColumn = document.getElementById("content-column");
-    if (contentColumn) {
-      contentColumn.scrollTop = 0;
-    }
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
   }, [authorHandle]);
 
   const showMore = () => {

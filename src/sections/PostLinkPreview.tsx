@@ -15,7 +15,7 @@ export default function PostLinkPreview({ external }: PostLinkPreviewProps) {
       {external.thumb && (
         <img src={external.thumb} className="max-w-full rounded-t" />
       )}
-      <div className="p-2">
+      <div className="p-2 break-words">
         <div>
           <strong>{external.title}</strong>
         </div>

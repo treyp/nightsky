@@ -13,7 +13,7 @@ interface PostInteractionsProps {
 export default function PostInteractions({ post }: PostInteractionsProps) {
   const recordId = post.uri.split("/").at(-1);
   return (
-    <div className="text-gray-400 mt-2 text-sm grid grid-cols-3 gap-8 w-60">
+    <div className="text-gray-400 mt-2 text-sm grid grid-cols-3 gap-8 max-w-xs">
       <Link to={`/profile/${post.author?.handle}/post/${recordId}`}>
         <ChatBubbleBottomCenterIcon className="h-4 w-4 inline-block stroke-2 mr-2" />
         {post.replyCount || ""}
