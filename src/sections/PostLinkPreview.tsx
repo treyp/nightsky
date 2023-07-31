@@ -1,5 +1,5 @@
 import { AppBskyEmbedExternal } from "@atproto/api";
-import { mapTextToComponents } from "./PostText";
+import mapTextToComponents from "../utils/mapTextToComponents";
 
 interface PostLinkPreviewProps {
   external: AppBskyEmbedExternal.View["external"];

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "../Auth";
 import Feed from "../sections/Feed";
 import FeedSkeleton from "../sections/FeedSkeleton";
@@ -20,19 +20,19 @@ export default function Profile() {
   const [isProfileFetching, setIsProfileFetching] = useState(false);
   const [isFeedFetching, setIsFeedFetching] = useState(false);
   const [profile, setProfile] = useState<ProfileViewDetailed>();
-  let resetProfile = false;
+  const resetProfile = useRef(false);
   const [feed, setFeed] = useState<OutputSchema["feed"]>();
-  let resetFeed = false;
+  const resetFeed = useRef(false);
   const [cursor, setCursor] = useState<OutputSchema["cursor"]>();
-  let resetCursor = false;
+  const resetCursor = useRef(false);
   const { authorHandle } = useParams();
 
-  const fetchNextPage = () => {
+  const fetchNextPage = useCallback(() => {
     if (!authState.agent || !authorHandle) {
       return;
     }
     const feedOptions: QueryParams = { actor: authorHandle, limit: FEED_LIMIT };
-    if (cursor && !resetCursor) {
+    if (cursor && !resetCursor.current) {
       feedOptions.cursor = cursor;
     }
     setIsFeedFetching(true);
@@ -43,10 +43,10 @@ export default function Profile() {
           console.error("Timeline fetch failed", success, data);
         }
         console.log("Timeline fetch success", success, data);
-        setFeed(((!resetFeed && feed) || []).concat(data.feed));
+        setFeed(((!resetFeed.current && feed) || []).concat(data.feed));
         setCursor(data.cursor);
-        resetFeed = false;
-        resetCursor = false;
+        resetFeed.current = false;
+        resetCursor.current = false;
         setIsFeedFetching(false);
       });
     setIsProfileFetching(true);
@@ -58,22 +58,22 @@ export default function Profile() {
         }
         console.log("Profile fetch success", success, data);
         setProfile(data);
-        resetProfile = false;
+        resetProfile.current = false;
         setIsProfileFetching(false);
       });
-  };
+  }, [authState.agent, authorHandle, cursor, feed]);
 
   useEffect(() => {
     // can't use state setters and readers in the same render,
     // so another variable is required
-    resetFeed = true;
+    resetFeed.current = true;
     setFeed(undefined);
-    resetCursor = true;
+    resetCursor.current = true;
     setCursor(undefined);
-    resetProfile = true;
+    resetProfile.current = true;
     setProfile(undefined);
     fetchNextPage();
-  }, [authState.agent, authorHandle]);
+  }, [authState.agent, authorHandle, fetchNextPage]);
 
   useEffect(() => {
     document.body.scrollTop = document.documentElement.scrollTop = 0;
@@ -97,7 +97,7 @@ export default function Profile() {
 
   return (
     <div className="w-full">
-      {((!profile && isProfileFetching) || resetProfile) && (
+      {((!profile && isProfileFetching) || resetProfile.current) && (
         <div className="animate-pulse w-full border-b border-gray-800 mb-4 pb-4">
           <div className="-mt-4 bg-base-content h-52" />
           <div className="rounded-full bg-base-content h-24 w-24 ml-2 -mt-12 border-2 border-black"></div>
@@ -113,7 +113,7 @@ export default function Profile() {
           </div>
         </div>
       )}
-      {profile && !resetProfile && (
+      {profile && !resetProfile.current && (
         <div className="-mt-4 border-b border-gray-800 mb-4 pb-4">
           {profile.banner ? (
             <img src={profile.banner} className="w-full aspect-[3/1]" />
@@ -137,9 +137,9 @@ export default function Profile() {
           </div>
         </div>
       )}
-      {(!feed || resetFeed) && isFeedFetching && <FeedSkeleton />}
-      {feed && !resetFeed && <Feed feed={feed} />}
-      {feed && !resetFeed && (
+      {(!feed || resetFeed.current) && isFeedFetching && <FeedSkeleton />}
+      {feed && !resetFeed.current && <Feed feed={feed} />}
+      {feed && !resetFeed.current && (
         <ShowMoreFeed
           loading={isFeedFetching}
           onClick={showMore}

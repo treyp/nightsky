@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../Auth";
 import { useParams } from "react-router-dom";
 import PostSkeleton from "../sections/PostSkeleton";
@@ -48,7 +48,7 @@ export default function PostRoute() {
   const [thread, setThread] = useState<ThreadViewPost>();
   const { authorHandle, postRecordId } = useParams();
 
-  const fetchPost = () => {
+  const fetchPost = useCallback(() => {
     const agent = authState.agent;
     if (!agent || !postRecordId || !authorHandle) {
       return;
@@ -85,11 +85,11 @@ export default function PostRoute() {
             setIsFetching(false);
           });
       });
-  };
+  }, [authState.agent, authorHandle, postRecordId]);
 
   useEffect(() => {
     fetchPost();
-  }, [authState.agent, authorHandle, postRecordId]);
+  }, [fetchPost]);
 
   return (
     <div className="w-full">

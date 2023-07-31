@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   useReducer,
   createContext,
@@ -16,16 +17,16 @@ import { AtpAgent } from "@atproto/api";
 import { OutputSchema } from "@atproto/api/dist/client/types/com/atproto/server/getSession";
 
 // Local storage keys
-export const SERVICE_LOCAL_STORAGE_KEY = "service";
-export const SESSION_LOCAL_STORAGE_KEY = "session";
+const SERVICE_LOCAL_STORAGE_KEY = "service";
+const SESSION_LOCAL_STORAGE_KEY = "session";
 
 // Auth reducer action types
-export const AUTH_ACTION_INIT_COMPLETE = "INIT_COMPLETE";
-export const AUTH_ACTION_RESUME_SESSION = "RESUME_SESSION";
-export const AUTH_ACTION_RESUME_SESSION_FAIL = "RESUME_SESSION_FAIL";
-export const AUTH_ACTION_RESUME_SESSION_SUCCESS = "RESUME_SESSION_SUCCESS";
-export const AUTH_ACTION_LOGIN_SUCCESS = "LOGIN_SUCCESS";
-export const AUTH_ACTION_LOGOUT = "LOGOUT";
+const AUTH_ACTION_INIT_COMPLETE = "INIT_COMPLETE";
+const AUTH_ACTION_RESUME_SESSION = "RESUME_SESSION";
+const AUTH_ACTION_RESUME_SESSION_FAIL = "RESUME_SESSION_FAIL";
+const AUTH_ACTION_RESUME_SESSION_SUCCESS = "RESUME_SESSION_SUCCESS";
+const AUTH_ACTION_LOGIN_SUCCESS = "LOGIN_SUCCESS";
+const AUTH_ACTION_LOGOUT = "LOGOUT";
 
 interface AuthState {
   service?: string;
@@ -128,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       authDispatch({ type: AUTH_ACTION_INIT_COMPLETE });
     }
-  }, []);
+  }, [authState.session]);
 
   // Respond to storage changes from another document.
   // The `storage` event only fires when session is updated in another document,
@@ -171,9 +172,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function RequireAuth({ children }: { children: ReactNode }) {
-  let { state } = useAuth();
-  let location = useLocation();
-  let navigate = useNavigate();
+  const { state } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   if (state.isInitialized && !state.agent) {
     // Redirect them to the /login page, but save the current location they were

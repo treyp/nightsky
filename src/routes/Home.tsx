@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../Auth";
 import Feed from "../sections/Feed";
 import FeedSkeleton from "../sections/FeedSkeleton";
@@ -16,7 +16,7 @@ export default function Home() {
   const [feed, setFeed] = useState<OutputSchema["feed"]>();
   const [cursor, setCursor] = useState<OutputSchema["cursor"]>();
 
-  const fetchNextPage = () => {
+  const fetchNextPage = useCallback(() => {
     if (!authState.agent) {
       return;
     }
@@ -36,11 +36,11 @@ export default function Home() {
         setCursor(data.cursor);
         setIsFetching(false);
       });
-  };
+  }, [authState.agent, cursor, feed]);
 
   useEffect(() => {
     fetchNextPage();
-  }, [authState.agent]);
+  }, [fetchNextPage]);
 
   const showMore = () => {
     fetchNextPage();

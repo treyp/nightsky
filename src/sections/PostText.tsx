@@ -2,23 +2,7 @@ import { RichText } from "@atproto/api";
 import { ReactNode, useEffect, useState } from "react";
 import { useAuth } from "../Auth";
 import { Link } from "react-router-dom";
-
-const LINE_RETURN_REGEX = /[\r\n]/;
-
-// handles line breaks
-export function mapTextToComponents(text: string) {
-  if (!text.match(LINE_RETURN_REGEX)) {
-    return text;
-  }
-  return text
-    .split(LINE_RETURN_REGEX)
-    .flatMap((segment, segmentIndex, segments) => {
-      if (segmentIndex === segments.length - 1) {
-        return segment;
-      }
-      return [segment, <br key={`line-break-${segmentIndex}`} />];
-    });
-}
+import mapTextToComponents from "../utils/mapTextToComponents";
 
 function mapSegmentsToComponents(segments: ReturnType<RichText["segments"]>) {
   const components = [];

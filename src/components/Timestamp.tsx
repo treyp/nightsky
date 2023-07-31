@@ -45,7 +45,7 @@ export default function Timestamp({
     }, updateInterval);
 
     return () => clearInterval(interval);
-  }, [date]);
+  }, [date, updateInterval]);
 
   return (
     <span
