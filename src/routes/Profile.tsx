@@ -73,7 +73,8 @@ export default function Profile() {
     resetProfile.current = true;
     setProfile(undefined);
     fetchNextPage();
-  }, [authState.agent, authorHandle, fetchNextPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authState.agent, authorHandle]);
 
   useEffect(() => {
     document.body.scrollTop = document.documentElement.scrollTop = 0;
