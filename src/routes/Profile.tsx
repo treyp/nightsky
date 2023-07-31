@@ -20,69 +20,66 @@ export default function Profile() {
   const [isProfileFetching, setIsProfileFetching] = useState(false);
   const [isFeedFetching, setIsFeedFetching] = useState(false);
   const [profile, setProfile] = useState<ProfileViewDetailed>();
-  const resetProfile = useRef(false);
   const [feed, setFeed] = useState<OutputSchema["feed"]>();
-  const resetFeed = useRef(false);
   const [cursor, setCursor] = useState<OutputSchema["cursor"]>();
-  const resetCursor = useRef(false);
   const { authorHandle } = useParams();
 
-  const fetchNextPage = useCallback(() => {
-    if (!authState.agent || !authorHandle) {
-      return;
-    }
-    const feedOptions: QueryParams = { actor: authorHandle, limit: FEED_LIMIT };
-    if (cursor && !resetCursor.current) {
-      feedOptions.cursor = cursor;
-    }
-    setIsFeedFetching(true);
-    authState.agent.api.app.bsky.feed
-      .getAuthorFeed(feedOptions)
-      .then(({ success, data }) => {
-        if (!success || !data.feed || !data.cursor) {
-          console.error("Timeline fetch failed", success, data);
-        }
-        console.log("Timeline fetch success", success, data);
-        setFeed(((!resetFeed.current && feed) || []).concat(data.feed));
-        setCursor(data.cursor);
-        resetFeed.current = false;
-        resetCursor.current = false;
-        setIsFeedFetching(false);
-      });
-    setIsProfileFetching(true);
-    authState.agent.api.app.bsky.actor
-      .getProfile({ actor: authorHandle })
-      .then(({ success, data }) => {
-        if (!success || !data) {
-          console.error("Profile fetch failed", success, data);
-        }
-        console.log("Profile fetch success", success, data);
-        setProfile(data);
-        resetProfile.current = false;
-        setIsProfileFetching(false);
-      });
-  }, [authState.agent, authorHandle, cursor, feed]);
+  const fetchNextPage = useCallback(
+    (forceCursor: OutputSchema["cursor"]) => {
+      if (!authState.agent || !authorHandle) {
+        return;
+      }
+      const feedOptions: QueryParams = {
+        actor: authorHandle,
+        limit: FEED_LIMIT,
+      };
+      if (forceCursor) {
+        feedOptions.cursor = forceCursor;
+      }
+      setIsFeedFetching(true);
+      authState.agent.api.app.bsky.feed
+        .getAuthorFeed(feedOptions)
+        .then(({ success, data }) => {
+          if (!success || !data.feed || !data.cursor) {
+            console.error("Timeline fetch failed", success, data);
+          } else {
+            console.log("Timeline fetch success", success, data);
+            setFeed((feed) => (feed || []).concat(data.feed));
+            setCursor(data.cursor);
+          }
+          setIsFeedFetching(false);
+        });
+      setIsProfileFetching(true);
+      authState.agent.api.app.bsky.actor
+        .getProfile({ actor: authorHandle })
+        .then(({ success, data }) => {
+          if (!success || !data) {
+            console.error("Profile fetch failed", success, data);
+          } else {
+            console.log("Profile fetch success", success, data);
+            setProfile(data);
+          }
+          setIsProfileFetching(false);
+        });
+    },
+    [authState.agent, authorHandle]
+  );
 
   useEffect(() => {
-    // can't use state setters and readers in the same render,
-    // so another variable is required
-    resetFeed.current = true;
     setFeed(undefined);
-    resetCursor.current = true;
     setCursor(undefined);
-    resetProfile.current = true;
     setProfile(undefined);
-    fetchNextPage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authState.agent, authorHandle]);
+
+    fetchNextPage(undefined);
+  }, [authState.agent, authorHandle, fetchNextPage]);
 
   useEffect(() => {
     document.body.scrollTop = document.documentElement.scrollTop = 0;
   }, [authorHandle]);
 
-  const showMore = () => {
-    fetchNextPage();
-  };
+  const showMore = useCallback(() => {
+    fetchNextPage(cursor);
+  }, [fetchNextPage, cursor]);
 
   let avatar = null;
   if (profile) {
@@ -98,7 +95,7 @@ export default function Profile() {
 
   return (
     <div className="w-full">
-      {((!profile && isProfileFetching) || resetProfile.current) && (
+      {!profile && isProfileFetching && (
         <div className="animate-pulse w-full border-b border-gray-800 mb-4 pb-4">
           <div className="-mt-4 bg-base-content h-52" />
           <div className="rounded-full bg-base-content h-24 w-24 ml-2 -mt-12 border-2 border-black"></div>
@@ -114,7 +111,7 @@ export default function Profile() {
           </div>
         </div>
       )}
-      {profile && !resetProfile.current && (
+      {profile && !isProfileFetching && (
         <div className="-mt-4 border-b border-gray-800 mb-4 pb-4">
           {profile.banner ? (
             <img src={profile.banner} className="w-full aspect-[3/1]" />
@@ -138,9 +135,9 @@ export default function Profile() {
           </div>
         </div>
       )}
-      {(!feed || resetFeed.current) && isFeedFetching && <FeedSkeleton />}
-      {feed && !resetFeed.current && <Feed feed={feed} />}
-      {feed && !resetFeed.current && (
+      {!feed && isFeedFetching && <FeedSkeleton />}
+      {feed && <Feed feed={feed} />}
+      {feed && (
         <ShowMoreFeed
           loading={isFeedFetching}
           onClick={showMore}
