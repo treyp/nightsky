@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../Auth";
 import Feed from "../sections/Feed";
 import FeedSkeleton from "../sections/FeedSkeleton";
