@@ -36,6 +36,7 @@ interface PostProps {
 
 export default function Post({ post, isParent, isFeatured }: PostProps) {
   const navigate = useNavigate();
+
   const handle = post.author.handle || "";
   const recordId = post.uri.split("/").at(-1);
   const record = post.record as Record | undefined;
