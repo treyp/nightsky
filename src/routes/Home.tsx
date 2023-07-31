@@ -41,7 +41,7 @@ export default function Home() {
   useEffect(() => {
     fetchNextPage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [authState.agent]);
 
   const showMore = () => {
     fetchNextPage();
