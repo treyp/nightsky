@@ -122,12 +122,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Attempt to resume session on page load
   useEffect(() => {
-    if (!authState.session && getLocalStorage(SESSION_LOCAL_STORAGE_KEY)) {
-      attemptResumeSession(authDispatch).finally(() => {
+    if (!authState.session) {
+      if (getLocalStorage(SESSION_LOCAL_STORAGE_KEY)) {
+        attemptResumeSession(authDispatch).finally(() => {
+          authDispatch({ type: AUTH_ACTION_INIT_COMPLETE });
+        });
+      } else {
         authDispatch({ type: AUTH_ACTION_INIT_COMPLETE });
-      });
-    } else {
-      authDispatch({ type: AUTH_ACTION_INIT_COMPLETE });
+      }
     }
   }, [authState.session]);
 
