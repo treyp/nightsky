@@ -24,7 +24,7 @@ export default function QuotedPost({ record, media }: QuotedPostProps) {
       <div>
         <div className="avatar">
           <div className="w-4 rounded-full">
-            <img src={post.author.avatar} />
+            <img src={(post.author || post.creator).avatar} />
           </div>
         </div>{" "}
         <PostMeta post={post} />

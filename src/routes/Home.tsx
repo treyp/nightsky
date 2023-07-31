@@ -51,13 +51,7 @@ export default function Home() {
     <div className="w-full">
       {!feed && isFetching && <FeedSkeleton />}
       {feed && <Feed feed={feed} />}
-      {feed && (
-        <ShowMoreFeed
-          loading={isFetching}
-          onClick={showMore}
-          isMore={feed.length % FEED_LIMIT === 0}
-        />
-      )}
+      {feed && <ShowMoreFeed loading={isFetching} onClick={showMore} isMore />}
     </div>
   );
 }
